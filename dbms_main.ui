@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dbms_main</class>
+ <widget class="QMainWindow" name="dbms_main">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DBMS (principal)</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(4, 4, 2);
+color: rgb(245, 236, 218);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>-20</y>
+      <width>691</width>
+      <height>251</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(89, 88, 76);
+background-color: rgb(10, 10, 8);
+</string>
+    </property>
+    <property name="title">
+     <string>GroupBox</string>
+    </property>
+    <widget class="QPlainTextEdit" name="plainTextEdit">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>671</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 85, 255);
+border-color: rgb(47, 47, 47);
+background-color: rgb(13, 13, 13);</string>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="plainTextEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>190</y>
+       <width>671</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 85, 255);
+border-color: rgb(89, 88, 76);
+background-color: rgb(4, 4, 4);</string>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>24</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(36, 38, 33);
+color: rgb(191, 182, 164);</string>
+     </property>
+     <property name="text">
+      <string>Ejecutar SQL</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>24</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(36, 38, 33);
+color: rgb(191, 182, 164);
+</string>
+     </property>
+     <property name="text">
+      <string>Copiar SQL</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_3">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>24</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(36, 38, 33);
+color: rgb(191, 182, 164);</string>
+     </property>
+     <property name="text">
+      <string>Analizar SQL</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>261</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(89, 88, 76);
+background-color: rgb(10, 10, 8);</string>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QScrollArea" name="saDatabaseConn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>241</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>239</width>
+        <height>169</height>
+       </rect>
+      </property>
+      <widget class="QTreeWidget" name="twDatabaseConn">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>241</width>
+         <height>171</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgb(89, 88, 76);</string>
+       </property>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>121</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Rama de conexiones</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>261</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(89, 88, 76);
+background-color: rgb(10, 10, 8);</string>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <widget class="QScrollArea" name="saDataView">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>241</width>
+       <height>391</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>239</width>
+        <height>389</height>
+       </rect>
+      </property>
+      <widget class="QTreeWidget" name="twDataView">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>241</width>
+         <height>401</height>
+        </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>240</y>
+      <width>691</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(89, 88, 76);
+background-color: rgb(10, 10, 8);</string>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QTableView" name="tableView">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>11</y>
+       <width>681</width>
+       <height>331</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="plainTextEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>350</y>
+       <width>671</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 85, 255);
+border-color: rgb(89, 88, 76);
+background-color: rgb(4, 4, 4);</string>
+     </property>
+     <property name="undoRedoEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuConexiones">
+    <property name="title">
+     <string>Conexiones</string>
+    </property>
+    <addaction name="actionAgregar_nueva_conexi_n_2"/>
+    <addaction name="actionSalir_de_conexi_n_actual"/>
+    <addaction name="actionEliminar_TODAS_las_conexiones"/>
+    <addaction name="actionSalida_forzada"/>
+   </widget>
+   <addaction name="menuConexiones"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAgregar_nueva_conexi_n">
+   <property name="text">
+    <string>Agregar nueva conexión,,,</string>
+   </property>
+  </action>
+  <action name="actionDesconectar_la_ses_n_actual">
+   <property name="text">
+    <string>Desconectar la sesión actual...</string>
+   </property>
+  </action>
+  <action name="actionElmnar_TODAS_las_conexiones">
+   <property name="text">
+    <string>Elmnar TODAS las conexiones...</string>
+   </property>
+  </action>
+  <action name="actionSalir_del_DBMS_forzado">
+   <property name="text">
+    <string>Salir del DBMS (forzado)</string>
+   </property>
+  </action>
+  <action name="actionAgregar_nueva_conexi_n_2">
+   <property name="text">
+    <string>Agregar nueva conexión</string>
+   </property>
+  </action>
+  <action name="actionSalir_de_conexi_n_actual">
+   <property name="text">
+    <string>Salir de conexión actual</string>
+   </property>
+  </action>
+  <action name="actionEliminar_TODAS_las_conexiones">
+   <property name="text">
+    <string>Eliminar TODAS las conexiones</string>
+   </property>
+  </action>
+  <action name="actionSalida_forzada">
+   <property name="text">
+    <string>Salida (forzada)</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
