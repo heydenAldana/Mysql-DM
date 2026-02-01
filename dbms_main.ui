@@ -18,7 +18,7 @@
 color: rgb(245, 236, 218);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="gbSqlCommand">
     <property name="geometry">
      <rect>
       <x>280</x>
@@ -35,7 +35,7 @@ background-color: rgb(10, 10, 8);
     <property name="title">
      <string>GroupBox</string>
     </property>
-    <widget class="QPlainTextEdit" name="plainTextEdit">
+    <widget class="QPlainTextEdit" name="pteSqlCommand">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -50,7 +50,7 @@ border-color: rgb(47, 47, 47);
 background-color: rgb(13, 13, 13);</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit_2">
+    <widget class="QPlainTextEdit" name="pleSqlDebugger">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -71,7 +71,7 @@ background-color: rgb(4, 4, 4);</string>
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="btnExecuteSql">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -88,7 +88,7 @@ color: rgb(191, 182, 164);</string>
       <string>Ejecutar SQL</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="btnCopySql">
      <property name="geometry">
       <rect>
        <x>120</x>
@@ -106,7 +106,7 @@ color: rgb(191, 182, 164);
       <string>Copiar SQL</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="btnAnalyzeSql">
      <property name="geometry">
       <rect>
        <x>230</x>
@@ -124,7 +124,7 @@ color: rgb(191, 182, 164);</string>
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_2">
+   <widget class="QGroupBox" name="gbDatabaseConn">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -195,7 +195,7 @@ background-color: rgb(10, 10, 8);</string>
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_3">
+   <widget class="QGroupBox" name="gbDataView">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -253,7 +253,7 @@ background-color: rgb(10, 10, 8);</string>
      </widget>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_4">
+   <widget class="QGroupBox" name="gbSqlOutput">
     <property name="geometry">
      <rect>
       <x>280</x>
@@ -269,7 +269,7 @@ background-color: rgb(10, 10, 8);</string>
     <property name="title">
      <string/>
     </property>
-    <widget class="QTableView" name="tableView">
+    <widget class="QTableView" name="tvSqlOutput">
      <property name="geometry">
       <rect>
        <x>5</x>
@@ -279,7 +279,7 @@ background-color: rgb(10, 10, 8);</string>
       </rect>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit_3">
+    <widget class="QPlainTextEdit" name="pteSqlOutput">
      <property name="geometry">
       <rect>
        <x>10</x>
