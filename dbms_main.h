@@ -17,6 +17,8 @@ public:
     dbms_main(QWidget *parent = nullptr);
     ~dbms_main();
 
+private slots:
+
 private:
     Ui::dbms_main *ui;
 };

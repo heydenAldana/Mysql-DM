@@ -17,6 +17,9 @@ set(PROJECT_SOURCES
         dbms_main.cpp
         dbms_main.h
         dbms_main.ui
+        dbms_connhandler.cpp
+        dbms_connhandler.h
+        dbms_connhandler.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
