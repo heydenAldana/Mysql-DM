@@ -15,6 +15,9 @@ public:
     explicit dbms_connHandler(QWidget *parent = nullptr);
     ~dbms_connHandler();
 
+private slots:
+    void on_btnCancel_clicked();
+
 private:
     Ui::dbms_connHandler *ui;
 };

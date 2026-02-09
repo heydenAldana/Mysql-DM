@@ -19,6 +19,8 @@ public:
 
 private slots:
 
+    void on_btnAddConn_clicked();
+
 private:
     Ui::dbms_main *ui;
 };

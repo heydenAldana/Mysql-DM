@@ -33,6 +33,9 @@ color: rgb(245, 236, 218);</string>
      <pointsize>16</pointsize>
     </font>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(17, 17, 17);</string>
+   </property>
    <property name="title">
     <string>Instancia de conexión</string>
    </property>

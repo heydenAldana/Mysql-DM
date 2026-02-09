@@ -14,17 +14,17 @@
    <string>DBMS (principal)</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(4, 4, 2);
-color: rgb(245, 236, 218);</string>
+   <string notr="true">color: rgb(245, 236, 218);
+background-color: rgb(17, 17, 17);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="gbSqlCommand">
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>-20</y>
+      <y>20</y>
       <width>691</width>
-      <height>251</height>
+      <height>241</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -33,13 +33,13 @@ background-color: rgb(10, 10, 8);
 </string>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string/>
     </property>
     <widget class="QPlainTextEdit" name="pteSqlCommand">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>60</y>
+       <y>50</y>
        <width>671</width>
        <height>131</height>
       </rect>
@@ -54,7 +54,7 @@ background-color: rgb(13, 13, 13);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>190</y>
+       <y>180</y>
        <width>671</width>
        <height>51</height>
       </rect>
@@ -75,7 +75,7 @@ background-color: rgb(4, 4, 4);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>24</y>
+       <y>10</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -92,7 +92,7 @@ color: rgb(191, 182, 164);</string>
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>24</y>
+       <y>10</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -110,7 +110,7 @@ color: rgb(191, 182, 164);
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>24</y>
+       <y>10</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -128,9 +128,9 @@ color: rgb(191, 182, 164);</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>0</y>
+      <y>20</y>
       <width>261</width>
-      <height>231</height>
+      <height>241</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -291,7 +291,7 @@ color: rgb(191, 182, 164);</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>240</y>
+      <y>270</y>
       <width>261</width>
       <height>411</height>
      </rect>
@@ -349,7 +349,7 @@ background-color: rgb(10, 10, 8);</string>
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>240</y>
+      <y>270</y>
       <width>691</width>
       <height>411</height>
      </rect>

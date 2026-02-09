@@ -15,3 +15,10 @@ dbms_main::~dbms_main()
 {
     delete ui;
 }
+
+void dbms_main::on_btnAddConn_clicked()
+{
+    dbms_connHandler uiConnConfig(this);
+    uiConnConfig.exec();
+}
+

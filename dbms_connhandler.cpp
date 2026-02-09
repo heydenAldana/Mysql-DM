@@ -12,3 +12,9 @@ dbms_connHandler::~dbms_connHandler()
 {
     delete ui;
 }
+
+void dbms_connHandler::on_btnCancel_clicked()
+{
+    this->close();
+}
+
