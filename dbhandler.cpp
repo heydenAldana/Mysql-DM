@@ -12,7 +12,11 @@ dbHandler::~dbHandler() {
 
 bool dbHandler::startSession(QString server, QString dbName, QString dbUsername, QString dbPassword, QString port)
 {
+    this->serverName = server;
+    this->dbName = dbName;
+    this->dbUsername = dbUsername;
     dbErrorMsg = "";
+
     if(connId.isEmpty())
         setConnId(QUuid::createUuid().toString());
     if(QSqlDatabase::contains(connId))

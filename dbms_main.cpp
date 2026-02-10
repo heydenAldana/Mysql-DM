@@ -18,12 +18,32 @@ dbms_main::~dbms_main()
 
 void dbms_main::on_btnAddConn_clicked()
 {
+    // PENDIENTE: Verificar no haya sesiones DUPLICADAS.
+
     dbms_connHandler uiConnConfig(this);
+
     if (uiConnConfig.exec() == QDialog::Accepted) {
         dbHandler* newConn = uiConnConfig.getHandler();
         if (newConn) {
-            activeConnList.append(newConn);
-            qDebug() << "Sesión agregada a la lista. Total:" << activeConnList.size();
+            // Revisar si ya existe en la lista de conexiones
+            bool connExists = false;
+            for (dbHandler* existingConn : activeConnList) {
+                if (existingConn->getServerName() == newConn->getServerName() &&
+                    existingConn->getDbName() == newConn->getDbName() &&
+                    existingConn->getDbUsername() == newConn->getDbUsername()) {
+                    connExists = true;
+                    break;
+                }
+            }
+            // Crear nueva conexion o rechazar conexion nueva si ya existe
+            if (connExists) {
+                qDebug() << "La conexion ya existe en la lista. No se instanciará";
+                newConn->disconnectSession();
+                delete newConn;
+            } else {
+                activeConnList.append(newConn);
+                qDebug() << "Nueva conexion agregada. Total:" << activeConnList.size();
+            }
         }
     }
 }

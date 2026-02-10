@@ -9,6 +9,7 @@
 class dbHandler
 {
 private:
+    QString serverName, dbName, dbUsername;
     QString dbErrorMsg, connId;
 public:
     dbHandler();
@@ -20,6 +21,9 @@ public:
     QString getDbErrorMsg() const { return this->dbErrorMsg; }
     void setConnId(const QString connId) { this->connId = connId; }
     QString getConnId() const { return this->connId; }
+    QString getServerName() const { return serverName; }
+    QString getDbName() const { return dbName; }
+    QString getDbUsername() const { return dbUsername; }
 };
 
 #endif // DBHANDLER_H
