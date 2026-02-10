@@ -2,6 +2,9 @@
 #define DBMS_CONNHANDLER_H
 
 #include <QDialog>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QDebug>
 
 namespace Ui {
 class dbms_connHandler;
@@ -18,8 +21,11 @@ public:
 private slots:
     void on_btnCancel_clicked();
 
+    void on_btnConnect_clicked();
+
 private:
     Ui::dbms_connHandler *ui;
+
 };
 
 #endif // DBMS_CONNHANDLER_H

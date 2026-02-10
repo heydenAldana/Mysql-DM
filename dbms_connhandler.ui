@@ -21,10 +21,10 @@ color: rgb(245, 236, 218);</string>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>30</y>
-     <width>521</width>
-     <height>331</height>
+     <x>10</x>
+     <y>10</y>
+     <width>581</width>
+     <height>381</height>
     </rect>
    </property>
    <property name="font">
@@ -45,7 +45,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>100</x>
       <y>50</y>
       <width>121</width>
       <height>21</height>
@@ -63,7 +63,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>100</x>
       <y>90</y>
       <width>131</width>
       <height>21</height>
@@ -81,7 +81,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>100</x>
       <y>130</y>
       <width>131</width>
       <height>21</height>
@@ -99,7 +99,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>100</x>
       <y>170</y>
       <width>131</width>
       <height>21</height>
@@ -117,7 +117,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>100</x>
       <y>210</y>
       <width>131</width>
       <height>21</height>
@@ -135,7 +135,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLineEdit" name="leServerName">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>240</x>
       <y>50</y>
       <width>241</width>
       <height>25</height>
@@ -150,7 +150,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLineEdit" name="leDatabaseName">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>240</x>
       <y>90</y>
       <width>241</width>
       <height>25</height>
@@ -165,7 +165,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLineEdit" name="leUsername">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>240</x>
       <y>130</y>
       <width>241</width>
       <height>25</height>
@@ -180,7 +180,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLineEdit" name="lePassword">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>240</x>
       <y>170</y>
       <width>241</width>
       <height>25</height>
@@ -198,7 +198,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QLineEdit" name="lePort">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>240</x>
       <y>210</y>
       <width>241</width>
       <height>25</height>
@@ -213,7 +213,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QPushButton" name="btnCancel">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>100</x>
       <y>260</y>
       <width>161</width>
       <height>51</height>
@@ -234,7 +234,7 @@ color: rgb(245, 236, 218);</string>
    <widget class="QPushButton" name="btnConnect">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>330</x>
       <y>260</y>
       <width>151</width>
       <height>51</height>
@@ -250,6 +250,28 @@ color: rgb(245, 236, 218);</string>
     </property>
     <property name="text">
      <string>Conectar</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lMessage">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>330</y>
+      <width>501</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Source Code Pro Medium</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
   </widget>
