@@ -4,6 +4,7 @@
 dbms_connHandler::dbms_connHandler(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::dbms_connHandler)
+    , handler(nullptr)
 {
     ui->setupUi(this);
 }
@@ -15,35 +16,27 @@ dbms_connHandler::~dbms_connHandler()
 
 void dbms_connHandler::on_btnCancel_clicked()
 {
-    this->close();
+    this->reject();
 }
-
 
 void dbms_connHandler::on_btnConnect_clicked()
 {
-    // Identificador unico para conexion
-    QString nombreConexion = "test";
-    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC", nombreConexion);
+    handler = new dbHandler();
+    bool success = handler->startSession(
+        ui->leServerName->text(),
+        ui->leDatabaseName->text(),
+        ui->leUsername->text(),
+        ui->lePassword->text()
+        // ui->lePort->text()
+        );
 
-    // Parametros de conexion
-    QString dsn = QString("DRIVER={MariaDB Unicode};"
-                          "SERVER=%1;"
-                          "DATABASE=%2;"
-                          "UID=%3;"
-                          "PWD=%4;"
-                          "OPTION=3;")
-                      .arg(ui->leServerName->text())
-                      .arg(ui->leDatabaseName->text())
-                      .arg(ui->leUsername->text())
-                      .arg(ui->lePassword->text());
-    db.setDatabaseName(dsn);
-
-    if (db.open()) {
-        qDebug() << "Conexión exitosa";
+    if (success) {
+        qDebug() << "Conexion exitosa";
         this->accept();
     } else {
-        qDebug() << "Error crítico: " << db.lastError().text();
-        ui->lMessage->setText(db.lastError().text());
+        ui->lMessage->setText("Error: " + handler->getDbErrorMsg());
+        qDebug() << "Conexion fallida: " << handler->getDbErrorMsg();
+        delete handler;
+        handler = nullptr;
     }
 }
-
