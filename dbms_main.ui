@@ -310,9 +310,9 @@ background-color: rgb(10, 10, 8);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>50</y>
        <width>241</width>
-       <height>391</height>
+       <height>351</height>
       </rect>
      </property>
      <property name="widgetResizable">
@@ -324,7 +324,7 @@ background-color: rgb(10, 10, 8);</string>
         <x>0</x>
         <y>0</y>
         <width>239</width>
-        <height>389</height>
+        <height>349</height>
        </rect>
       </property>
       <widget class="QTreeWidget" name="twDataView">
@@ -343,6 +343,19 @@ background-color: rgb(10, 10, 8);</string>
        </column>
       </widget>
      </widget>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>151</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Vista de la base de datos</string>
+     </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="gbSqlOutput">

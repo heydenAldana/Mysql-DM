@@ -22,8 +22,12 @@ private slots:
     void on_btnAddConn_clicked();
     void on_btnDeleteConn_clicked();
 
+    void on_btnDeleteAllConn_clicked();
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;
+    void updateConnTree();
+    void changeToolsState(bool setActive);
 };
 #endif // DBMS_MAIN_H

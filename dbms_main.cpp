@@ -9,6 +9,9 @@ dbms_main::dbms_main(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+
+    // Deshabilitar inputs y btns ya que no hay conexiones
+    changeToolsState(0);
 }
 
 dbms_main::~dbms_main()
@@ -18,8 +21,6 @@ dbms_main::~dbms_main()
 
 void dbms_main::on_btnAddConn_clicked()
 {
-    // PENDIENTE: Verificar no haya sesiones DUPLICADAS.
-
     dbms_connHandler uiConnConfig(this);
 
     if (uiConnConfig.exec() == QDialog::Accepted) {
@@ -43,6 +44,8 @@ void dbms_main::on_btnAddConn_clicked()
             } else {
                 activeConnList.append(newConn);
                 qDebug() << "Nueva conexion agregada. Total:" << activeConnList.size();
+                updateConnTree();
+                changeToolsState(1);
             }
         }
     }
@@ -55,9 +58,62 @@ void dbms_main::on_btnDeleteConn_clicked()
         dbHandler* lastConn = activeConnList.takeLast();
         lastConn->disconnectSession();
         delete lastConn;
+        updateConnTree();
         qDebug() << "Sesión finalizada y removida de la lista.";
     } else {
         qDebug() << "No hay sesiones activas para cerrar.";
     }
+}
+
+void dbms_main::updateConnTree()
+{
+    ui->twDatabaseConn->clear();
+    for (dbHandler* conn : activeConnList) {
+        QTreeWidgetItem* connItem = new QTreeWidgetItem(ui->twDatabaseConn);
+        connItem->setText(0, conn->getDbUsername() + "@" + conn->getServerName() + " [" + conn->getDbName() + "]");
+        QTreeWidgetItem* dbItem = new QTreeWidgetItem(connItem);
+        dbItem->setText(0, "Base de Datos: " + conn->getDbName());
+        QTreeWidgetItem* connIdItem = new QTreeWidgetItem(connItem);
+        connIdItem->setText(0, "ID: " + conn->getConnId());
+    }
+}
+
+void dbms_main::changeToolsState(bool setActive)
+{
+    if (setActive) {
+        ui->btnEditConn->setEnabled(1);
+        ui->btnDeleteConn->setEnabled(1);
+        ui->btnDeleteAllConn->setEnabled(1);
+        ui->btnExecuteSql->setEnabled(1);
+        ui->btnCopySql->setEnabled(1);
+        ui->btnAnalyzeSql->setEnabled(1);
+        ui->pteSqlCommand->setEnabled(1);
+    } else {
+        ui->btnEditConn->setEnabled(0);
+        ui->btnDeleteConn->setEnabled(0);
+        ui->btnDeleteAllConn->setEnabled(0);
+        ui->btnExecuteSql->setEnabled(0);
+        ui->btnCopySql->setEnabled(0);
+        ui->btnAnalyzeSql->setEnabled(0);
+        ui->pteSqlCommand->setEnabled(0);
+    }
+}
+
+
+void dbms_main::on_btnDeleteAllConn_clicked()
+{
+    if (activeConnList.isEmpty()) {
+        qDebug() << "No hay conexiones activas para eliminar.";
+        return;
+    }
+    for (dbHandler* existingConn : activeConnList) {
+        qDebug() << "Sesion con ID " << existingConn->getConnId() << "Desconectada";
+        existingConn->disconnectSession();
+        delete existingConn;
+    }
+    activeConnList.clear();
+    updateConnTree();
+    qDebug() << "TODAS las conexiones fueron removidas de la memoria y de la lista";
+    changeToolsState(0);
 }
 
