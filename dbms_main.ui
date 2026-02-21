@@ -129,7 +129,7 @@ color: rgb(191, 182, 164);</string>
       <string>Exportar DDL</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnChangeMode">
+    <widget class="QPushButton" name="btnCleanSqlCommand">
      <property name="geometry">
       <rect>
        <x>230</x>
@@ -143,7 +143,7 @@ color: rgb(191, 182, 164);</string>
 color: rgb(191, 182, 164);</string>
      </property>
      <property name="text">
-      <string>Modo: SQL</string>
+      <string>Limpiar consola</string>
      </property>
     </widget>
    </widget>

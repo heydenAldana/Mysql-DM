@@ -427,3 +427,10 @@ void dbms_main::showQueryResults(QSqlQuery& query)
     updateConnTree();
     showStatusMessage(QString("Consulta exitosa. %1 fila(s) obtenidas.").arg(row), false);
 }
+
+void dbms_main::on_btnCleanSqlCommand_clicked()
+{
+    ui->pteSqlCommand->clear();
+    ui->pteSqlOutput->clear();
+}
+

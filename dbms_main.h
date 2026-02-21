@@ -34,6 +34,8 @@ private slots:
 
     void onDataViewContextMenu(const QPoint& pos);
 
+    void on_btnCleanSqlCommand_clicked();
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;
