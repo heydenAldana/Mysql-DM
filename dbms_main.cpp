@@ -3,6 +3,7 @@
 #include "dbms_connhandler.h"
 #include "dbhandler.h"
 #include "dbms_create_table.h"
+#include "dbms_create_view.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -476,5 +477,17 @@ void dbms_main::on_btnCopySql_clicked()
     }
     QGuiApplication::clipboard()->setText(sqlText);
     showStatusMessage("SQL copiado al portapapeles.", false);
+}
+
+
+void dbms_main::on_btnCreateView_clicked()
+{
+    if (!activeConn) {
+        showStatusMessage("ERROR: No se ha seleccionado ninguna conexión para crear una vista.", true);
+        return;
+    }
+    dbms_view_creation dialog(activeConn, this);
+    if (dialog.exec() == QDialog::Accepted)
+        refreshDbInfo(activeConn);
 }
 
