@@ -40,6 +40,8 @@ private slots:
 
     void on_btnCreateTable_clicked();
 
+    void on_btnCopySql_clicked();
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;

@@ -7,6 +7,7 @@
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QMenu>
+#include <QClipboard>
 
 dbms_main::dbms_main(QWidget *parent)
     : QMainWindow(parent)
@@ -463,5 +464,17 @@ void dbms_main::on_btnCreateTable_clicked()
     if (dialog.exec() == QDialog::Accepted) {
         refreshDbInfo(activeConn);
     }
+}
+
+
+void dbms_main::on_btnCopySql_clicked()
+{
+    QString sqlText = ui->pteSqlCommand->toPlainText();
+    if (sqlText.isEmpty()) {
+        showStatusMessage("ERROR: No hay texto para copiar.", true);
+        return;
+    }
+    QGuiApplication::clipboard()->setText(sqlText);
+    showStatusMessage("SQL copiado al portapapeles.", false);
 }
 
