@@ -10,12 +10,6 @@
     <height>696</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
    <string>DBMS (principal)</string>
   </property>
@@ -29,7 +23,7 @@ background-color: rgb(17, 17, 17);</string>
      <rect>
       <x>280</x>
       <y>20</y>
-      <width>721</width>
+      <width>691</width>
       <height>241</height>
      </rect>
     </property>
@@ -46,7 +40,7 @@ background-color: rgb(10, 10, 8);
       <rect>
        <x>10</x>
        <y>50</y>
-       <width>701</width>
+       <width>671</width>
        <height>131</height>
       </rect>
      </property>
@@ -61,7 +55,7 @@ background-color: rgb(13, 13, 13);</string>
       <rect>
        <x>10</x>
        <y>180</y>
-       <width>701</width>
+       <width>671</width>
        <height>51</height>
       </rect>
      </property>
@@ -82,9 +76,14 @@ background-color: rgb(4, 4, 4);</string>
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>101</width>
+       <width>121</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(36, 38, 33);
@@ -97,11 +96,16 @@ color: rgb(191, 182, 164);</string>
     <widget class="QPushButton" name="btnCopySql">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>160</x>
        <y>10</y>
-       <width>101</width>
+       <width>121</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(36, 38, 33);
@@ -115,11 +119,16 @@ color: rgb(191, 182, 164);
     <widget class="QPushButton" name="btnExportDDL">
      <property name="geometry">
       <rect>
-       <x>340</x>
+       <x>470</x>
        <y>10</y>
-       <width>101</width>
+       <width>131</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(36, 38, 33);
@@ -132,11 +141,16 @@ color: rgb(191, 182, 164);</string>
     <widget class="QPushButton" name="btnCleanSqlCommand">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>310</x>
        <y>10</y>
-       <width>101</width>
+       <width>131</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(36, 38, 33);
@@ -386,7 +400,7 @@ background-color: rgb(10, 10, 8);</string>
      <rect>
       <x>280</x>
       <y>270</y>
-      <width>721</width>
+      <width>691</width>
       <height>411</height>
      </rect>
     </property>
@@ -401,31 +415,59 @@ background-color: rgb(10, 10, 8);</string>
      <property name="geometry">
       <rect>
        <x>5</x>
-       <y>11</y>
-       <width>711</width>
+       <y>60</y>
+       <width>681</width>
        <height>331</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
     </widget>
-    <widget class="QPlainTextEdit" name="pteSqlOutput">
+    <widget class="QPushButton" name="btnCreateTable">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>350</y>
-       <width>701</width>
-       <height>51</height>
+       <y>10</y>
+       <width>161</width>
+       <height>41</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(255, 85, 255);
-border-color: rgb(89, 88, 76);
-background-color: rgb(4, 4, 4);</string>
+      <string notr="true">background-color: rgb(36, 38, 33);
+color: rgb(191, 182, 164);</string>
      </property>
-     <property name="undoRedoEnabled">
-      <bool>false</bool>
+     <property name="text">
+      <string>Crear Nueva Tabla</string>
      </property>
-     <property name="readOnly">
-      <bool>true</bool>
+    </widget>
+    <widget class="QPushButton" name="btnCreateView">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>10</y>
+       <width>161</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(36, 38, 33);
+color: rgb(191, 182, 164);</string>
+     </property>
+     <property name="text">
+      <string>Crear Nueva Vista</string>
      </property>
     </widget>
    </widget>

@@ -36,6 +36,10 @@ private slots:
 
     void on_btnCleanSqlCommand_clicked();
 
+    void on_twDataView_itemDoubleClicked(QTreeWidgetItem *item, int column);
+
+    void on_btnClearSqlCommand_clicked();
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;

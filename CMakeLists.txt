@@ -30,6 +30,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         dbms_connhandler.h dbms_connhandler.cpp dbms_connhandler.ui
         dbhandler.h dbhandler.cpp
+        dbms_create_table.h dbms_create_table.cpp dbms_create_table.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET MySQL_DBMS APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

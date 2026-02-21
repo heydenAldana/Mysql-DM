@@ -20,6 +20,8 @@ dbms_main::dbms_main(QWidget *parent)
     ui->twDataView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->twDataView, &QTreeWidget::customContextMenuRequested,
             this, &dbms_main::onDataViewContextMenu);
+    connect(ui->twDataView, &QTreeWidget::itemDoubleClicked,
+            this, &dbms_main::on_twDataView_itemDoubleClicked);
 }
 
 dbms_main::~dbms_main()
@@ -431,6 +433,21 @@ void dbms_main::showQueryResults(QSqlQuery& query)
 void dbms_main::on_btnCleanSqlCommand_clicked()
 {
     ui->pteSqlCommand->clear();
-    ui->pteSqlOutput->clear();
+    ui->pleSqlDebugger->clear();
 }
 
+
+void dbms_main::on_twDataView_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    Q_UNUSED(column);
+    if (!item || !item->parent() || !activeConn) return;
+    QString parentText = item->parent()->text(0);
+    // Solo actua si es Tabla o Vista
+    if (parentText.contains("Tablas") || parentText.contains("Vistas")) {
+        QString objectName = item->text(0).remove("● ").trimmed();
+        QString sql = QString("SELECT * FROM `%1`;").arg(objectName);
+        ui->pteSqlCommand->setPlainText(sql);
+        on_btnExecuteSql_clicked();
+        showStatusMessage(QString("Visualizando contenido de: %1").arg(objectName), false);
+    }
+}
