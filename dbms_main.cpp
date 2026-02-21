@@ -4,6 +4,7 @@
 #include "dbhandler.h"
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlRecord>
 
 dbms_main::dbms_main(QWidget *parent)
     : QMainWindow(parent)
@@ -181,14 +182,89 @@ void dbms_main::on_btnDeleteAllConn_clicked()
 void dbms_main::on_twDatabaseConn_itemClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column);
-    if (!item) return;
-    // Solo reaccionar si es un item raíz (conexión)
-    if (item->parent() != nullptr) return;
+    if (!item || item->parent() != nullptr) return;
     int index = ui->twDatabaseConn->indexOfTopLevelItem(item);
     if (index >= 0 && index < activeConnList.size()) {
-        refreshDbInfo(activeConnList[index]);
+        activeConn = activeConnList[index];
+        refreshDbInfo(activeConn);
     }
 }
 
+void dbms_main::showStatusMessage(const QString& msg, bool isError)
+{
+    ui->pleSqlDebugger->clear();
+    ui->pleSqlDebugger->appendPlainText(msg);
+    ui->pleSqlDebugger->setStyleSheet(isError
+                                        ? "color: #ff4444; font-weight: bold;"
+                                        : "color: #44ff88; font-weight: bold;");
+}
 
+void dbms_main::on_btnExecuteSql_clicked()
+{
+    // Verificar si hay conexion activa y hay un sql que ejecutar
+    if (!activeConn) {
+        showStatusMessage("ERROR: No hay ninguna instancia de conexión seleccionada.", true);
+        return;
+    }
+    QString sql = ui->pteSqlCommand->toPlainText().trimmed();
+    if (sql.isEmpty()) {
+        showStatusMessage("ERROR: No hay ningun SQL que ejecutar.", true);
+        return;
+    }
 
+    QSqlDatabase db = QSqlDatabase::database(activeConn->getConnId());
+    if (!db.isOpen()) {
+        showStatusMessage("ERROR: La conexión no está activa.", true);
+        return;
+    }
+    QSqlQuery query(db);
+    bool success = query.exec(sql);
+    if (!success) {
+        showStatusMessage("ERROR: " + query.lastError().text(), true);
+        return;
+    }
+
+    // Eejecutar la query
+    if (query.isSelect())
+        showQueryResults(query);
+    else {
+        int affected = query.numRowsAffected();
+        showStatusMessage(QString("Ejecutado correctamente. Filas afectadas: %1").arg(affected), false);
+        // Limpiar tabla si no hay resultados que mostrar
+        ui->tvSqlOutput->setModel(nullptr);
+    }
+}
+
+void dbms_main::showQueryResults(QSqlQuery& query)
+{
+    QSqlRecord record = query.record();
+    int colCount = record.count();
+    QStandardItemModel* model = new QStandardItemModel(this);
+
+    // Encabezados de columna de tabla
+    QStringList headers;
+    for (int i = 0; i < colCount; i++)
+        headers << record.fieldName(i);
+    model->setHorizontalHeaderLabels(headers);
+    // Filas de datos en tabla
+    int row = 0;
+    while (query.next()) {
+        QList<QStandardItem*> rowItems;
+        for (int col = 0; col < colCount; col++) {
+            QStandardItem* item = new QStandardItem(query.value(col).toString());
+            item->setEditable(false);
+            rowItems.append(item);
+        }
+        model->appendRow(rowItems);
+        row++;
+    }
+
+    // Reemplazar modelo anterior de tabla
+    QAbstractItemModel* oldModel = ui->tvSqlOutput->model();
+    ui->tvSqlOutput->setModel(model);
+    if (oldModel && oldModel->parent() == this)
+        delete oldModel;
+    ui->tvSqlOutput->horizontalHeader()->setStretchLastSection(true);
+    ui->tvSqlOutput->resizeColumnsToContents();
+    showStatusMessage(QString("Consulta exitosa. %1 fila(s) obtenidas.").arg(row), false);
+}

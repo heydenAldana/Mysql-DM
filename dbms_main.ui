@@ -10,6 +10,12 @@
     <height>768</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>DBMS (principal)</string>
   </property>
@@ -23,7 +29,7 @@ background-color: rgb(17, 17, 17);</string>
      <rect>
       <x>280</x>
       <y>20</y>
-      <width>691</width>
+      <width>721</width>
       <height>241</height>
      </rect>
     </property>
@@ -40,7 +46,7 @@ background-color: rgb(10, 10, 8);
       <rect>
        <x>10</x>
        <y>50</y>
-       <width>671</width>
+       <width>701</width>
        <height>131</height>
       </rect>
      </property>
@@ -55,7 +61,7 @@ background-color: rgb(13, 13, 13);</string>
       <rect>
        <x>10</x>
        <y>180</y>
-       <width>671</width>
+       <width>701</width>
        <height>51</height>
       </rect>
      </property>
@@ -380,7 +386,7 @@ background-color: rgb(10, 10, 8);</string>
      <rect>
       <x>280</x>
       <y>270</y>
-      <width>691</width>
+      <width>721</width>
       <height>411</height>
      </rect>
     </property>
@@ -396,7 +402,7 @@ background-color: rgb(10, 10, 8);</string>
       <rect>
        <x>5</x>
        <y>11</y>
-       <width>681</width>
+       <width>711</width>
        <height>331</height>
       </rect>
      </property>
@@ -406,7 +412,7 @@ background-color: rgb(10, 10, 8);</string>
       <rect>
        <x>10</x>
        <y>350</y>
-       <width>671</width>
+       <width>701</width>
        <height>51</height>
       </rect>
      </property>

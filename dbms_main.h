@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTreeWidgetItem>
+#include <QStandardItemModel>
 #include "dbhandler.h"
 
 QT_BEGIN_NAMESPACE
@@ -27,11 +28,16 @@ private slots:
 
     void on_twDatabaseConn_itemClicked(QTreeWidgetItem *item, int column);
 
+    void on_btnExecuteSql_clicked();
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;
+    dbHandler* activeConn = nullptr;
     void updateConnTree();
+    void showQueryResults(QSqlQuery& query);
     void changeToolsState(bool setActive);
     void refreshDbInfo(dbHandler* handler);
+    void showStatusMessage(const QString& msg, bool isError);
 };
 #endif // DBMS_MAIN_H
