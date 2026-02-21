@@ -2,6 +2,7 @@
 #include "./ui_dbms_main.h"
 #include "dbms_connhandler.h"
 #include "dbhandler.h"
+#include "dbms_create_table.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -451,3 +452,16 @@ void dbms_main::on_twDataView_itemDoubleClicked(QTreeWidgetItem *item, int colum
         showStatusMessage(QString("Visualizando contenido de: %1").arg(objectName), false);
     }
 }
+
+void dbms_main::on_btnCreateTable_clicked()
+{
+    if (!activeConn) {
+        showStatusMessage("ERROR: No ha seleccionado ninguna conexión para crear la tabla", true);
+        return;
+    }
+    dbms_create_table dialog(activeConn, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        refreshDbInfo(activeConn);
+    }
+}
+

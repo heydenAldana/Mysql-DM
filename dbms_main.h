@@ -38,7 +38,7 @@ private slots:
 
     void on_twDataView_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
-    void on_btnClearSqlCommand_clicked();
+    void on_btnCreateTable_clicked();
 
 private:
     Ui::dbms_main *ui;
