@@ -2,6 +2,8 @@
 #include "./ui_dbms_main.h"
 #include "dbms_connhandler.h"
 #include "dbhandler.h"
+#include <QSqlQuery>
+#include <QSqlError>
 
 dbms_main::dbms_main(QWidget *parent)
     : QMainWindow(parent)
@@ -59,6 +61,7 @@ void dbms_main::on_btnDeleteConn_clicked()
         lastConn->disconnectSession();
         delete lastConn;
         updateConnTree();
+        ui->twDataView->clear();
         qDebug() << "Sesión finalizada y removida de la lista.";
     } else {
         qDebug() << "No hay sesiones activas para cerrar.";
@@ -86,7 +89,7 @@ void dbms_main::changeToolsState(bool setActive)
         ui->btnDeleteAllConn->setEnabled(1);
         ui->btnExecuteSql->setEnabled(1);
         ui->btnCopySql->setEnabled(1);
-        ui->btnAnalyzeSql->setEnabled(1);
+        ui->btnExportDDL->setEnabled(1);
         ui->pteSqlCommand->setEnabled(1);
     } else {
         ui->btnEditConn->setEnabled(0);
@@ -94,9 +97,66 @@ void dbms_main::changeToolsState(bool setActive)
         ui->btnDeleteAllConn->setEnabled(0);
         ui->btnExecuteSql->setEnabled(0);
         ui->btnCopySql->setEnabled(0);
-        ui->btnAnalyzeSql->setEnabled(0);
+        ui->btnExportDDL->setEnabled(0);
         ui->pteSqlCommand->setEnabled(0);
     }
+}
+
+void dbms_main::refreshDbInfo(dbHandler *handler)
+{
+    if (!handler) return;
+    ui->twDataView->clear();
+    QSqlDatabase db = QSqlDatabase::database(handler->getConnId());
+    if (!db.isOpen()) return;
+
+    QString dbName = handler->getDbName();
+    QTreeWidgetItem* root = new QTreeWidgetItem(ui->twDataView);
+    root->setText(0, "DB: " + dbName);
+    root->setExpanded(true);
+
+    // Funcion lambda para Agregar los objetos al twDataView
+    auto addCategory = [&](const QString& title, const QString& query, int nameCol, const QString& emoji)
+    {
+        QTreeWidgetItem* catItem = new QTreeWidgetItem(root);
+        catItem->setText(0, emoji + " " + title);
+        QSqlQuery q(db);
+        if (q.exec(query)) {
+            while (q.next()) {
+                QTreeWidgetItem* child = new QTreeWidgetItem(catItem);
+                child->setText(0, "● " + q.value(nameCol).toString());
+            }
+        } else {
+            QTreeWidgetItem* errItem = new QTreeWidgetItem(catItem);
+            errItem->setText(0, "● ERROR: " + q.lastError().text());
+        }
+        catItem->setExpanded(false);
+    };
+
+    // Agregar categorias de objetos admitidos por MySQL
+    addCategory("Tablas",
+                QString("SHOW FULL TABLES IN `%1` WHERE Table_type = 'BASE TABLE'").arg(dbName),
+                0, "📊");
+    addCategory("Vistas",
+                QString("SHOW FULL TABLES IN `%1` WHERE Table_type = 'VIEW'").arg(dbName),
+                0, "🖼️");
+    addCategory("Procedimientos",
+                QString("SHOW PROCEDURE STATUS WHERE Db = '%1'").arg(dbName),
+                1, "⚙️");
+    addCategory("Funciones",
+                QString("SHOW FUNCTION STATUS WHERE Db = '%1'").arg(dbName),
+                1, "📝");
+    addCategory("Triggers",
+                QString("SHOW TRIGGERS FROM `%1`").arg(dbName),
+                0, "⚡");
+    addCategory("Índices",
+                QString("SELECT DISTINCT index_name, table_name "
+                        "FROM mysql.innodb_index_stats "
+                        "WHERE database_name = '%1' "
+                        "AND stat_name = 'size'").arg(dbName),
+                0, "🔑");
+    addCategory("Usuarios",
+                "SELECT CONCAT(User, '@', Host) FROM mysql.user",
+                0, "👤");
 }
 
 
@@ -112,8 +172,23 @@ void dbms_main::on_btnDeleteAllConn_clicked()
         delete existingConn;
     }
     activeConnList.clear();
+    ui->twDataView->clear();
     updateConnTree();
     qDebug() << "TODAS las conexiones fueron removidas de la memoria y de la lista";
     changeToolsState(0);
 }
+
+void dbms_main::on_twDatabaseConn_itemClicked(QTreeWidgetItem *item, int column)
+{
+    Q_UNUSED(column);
+    if (!item) return;
+    // Solo reaccionar si es un item raíz (conexión)
+    if (item->parent() != nullptr) return;
+    int index = ui->twDatabaseConn->indexOfTopLevelItem(item);
+    if (index >= 0 && index < activeConnList.size()) {
+        refreshDbInfo(activeConnList[index]);
+    }
+}
+
+
 

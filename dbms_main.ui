@@ -106,7 +106,24 @@ color: rgb(191, 182, 164);
       <string>Copiar SQL</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnAnalyzeSql">
+    <widget class="QPushButton" name="btnExportDDL">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>10</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(36, 38, 33);
+color: rgb(191, 182, 164);</string>
+     </property>
+     <property name="text">
+      <string>Exportar DDL</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnChangeMode">
      <property name="geometry">
       <rect>
        <x>230</x>
@@ -120,7 +137,7 @@ color: rgb(191, 182, 164);
 color: rgb(191, 182, 164);</string>
      </property>
      <property name="text">
-      <string>Analizar SQL</string>
+      <string>Modo: SQL</string>
      </property>
     </widget>
    </widget>

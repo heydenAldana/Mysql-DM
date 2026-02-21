@@ -2,6 +2,7 @@
 #define DBMS_MAIN_H
 
 #include <QMainWindow>
+#include <QTreeWidgetItem>
 #include "dbhandler.h"
 
 QT_BEGIN_NAMESPACE
@@ -24,10 +25,13 @@ private slots:
 
     void on_btnDeleteAllConn_clicked();
 
+    void on_twDatabaseConn_itemClicked(QTreeWidgetItem *item, int column);
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;
     void updateConnTree();
     void changeToolsState(bool setActive);
+    void refreshDbInfo(dbHandler* handler);
 };
 #endif // DBMS_MAIN_H
