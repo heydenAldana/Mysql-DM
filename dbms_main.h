@@ -30,6 +30,10 @@ private slots:
 
     void on_btnExecuteSql_clicked();
 
+    void on_btnExportDDL_clicked();
+
+    void onDataViewContextMenu(const QPoint& pos);
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;
@@ -39,5 +43,6 @@ private:
     void changeToolsState(bool setActive);
     void refreshDbInfo(dbHandler* handler);
     void showStatusMessage(const QString& msg, bool isError);
+    QString generateDDL(QTreeWidgetItem* item);
 };
 #endif // DBMS_MAIN_H

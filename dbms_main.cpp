@@ -5,6 +5,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
+#include <QMenu>
 
 dbms_main::dbms_main(QWidget *parent)
     : QMainWindow(parent)
@@ -15,6 +16,10 @@ dbms_main::dbms_main(QWidget *parent)
 
     // Deshabilitar inputs y btns ya que no hay conexiones
     changeToolsState(0);
+
+    ui->twDataView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->twDataView, &QTreeWidget::customContextMenuRequested,
+            this, &dbms_main::onDataViewContextMenu);
 }
 
 dbms_main::~dbms_main()
@@ -22,10 +27,116 @@ dbms_main::~dbms_main()
     delete ui;
 }
 
+QString dbms_main::generateDDL(QTreeWidgetItem* item)
+{
+    if (!item || !item->parent()) return "";
+    if (!activeConn) return "";
+    QSqlDatabase db = QSqlDatabase::database(activeConn->getConnId());
+    if (!db.isOpen()) return "";
+
+    QString parentText = item->parent()->text(0);
+    QString objectName = item->text(0).remove("● ").trimmed();
+    QString sql = "";
+    QSqlQuery query(db);
+    if (parentText.contains("Tablas"))
+        sql = QString("SHOW CREATE TABLE `%1`").arg(objectName);
+    else if (parentText.contains("Vistas"))
+        sql = QString("SHOW CREATE VIEW `%1`").arg(objectName);
+    else if (parentText.contains("Procedimientos"))
+        sql = QString("SHOW CREATE PROCEDURE `%1`").arg(objectName);
+    else if (parentText.contains("Funciones"))
+        sql = QString("SHOW CREATE FUNCTION `%1`").arg(objectName);
+    else if (parentText.contains("Triggers"))
+        sql = QString("SHOW CREATE TRIGGER `%1`").arg(objectName);
+    else if (parentText.contains("Usuarios")) {
+        // SHOW CREATE USER necesita 'user'@'host'
+        int atPos = objectName.lastIndexOf('@');
+        QString user = objectName.left(atPos);
+        QString host = objectName.mid(atPos + 1);
+        sql = QString("SHOW CREATE USER '%1'@'%2'").arg(user).arg(host);
+        if (query.exec(sql) && query.next())
+            return query.value(0).toString();
+    } else if (parentText.contains("Índices")) {
+        // Recuperar table_name guardado en UserRole
+        QString tableName = item->data(0, Qt::UserRole).toString();
+        QString indexName = objectName.left(objectName.indexOf(" ("));
+        sql = QString("SHOW INDEX FROM `%1`.`%2` WHERE Key_name = '%3'")
+                  .arg(activeConn->getDbName())
+                  .arg(tableName)
+                  .arg(indexName);
+        if (!query.exec(sql)) {
+            showStatusMessage("ERROR: Fallo al leer índice: " + query.lastError().text(), true);
+            return "";
+        }
+        // Reconstruir DDL agrupando columnas por Seq_in_index = Column_name
+        bool isUnique = false;
+        QString indexType = "BTREE";
+        QMap<int, QString> columns;
+        while (query.next()) {
+            isUnique   = (query.value("Non_unique").toInt() == 0);
+            indexType  = query.value("Index_type").toString();
+            int seq    = query.value("Seq_in_index").toInt();
+            columns[seq] = query.value("Column_name").toString();
+        }
+
+        if (columns.isEmpty()) return "";
+        QStringList colList;
+        for (const QString& col : columns)
+            colList << "`" + col + "`";
+        QString ddl = QString("CREATE %1INDEX `%2` ON `%3`.`%4` (%5) USING %6;")
+                          .arg(isUnique ? "UNIQUE " : "")
+                          .arg(indexName)
+                          .arg(activeConn->getDbName())
+                          .arg(tableName)
+                          .arg(colList.join(", "))
+                          .arg(indexType);
+        return ddl;
+    }
+    else
+        return "";
+    if (query.exec(sql) && query.next())
+        return query.value(1).toString();
+    if (query.lastError().isValid())
+        showStatusMessage("ERROR SQL: " + query.lastError().text(), true);
+    return "";
+}
+
+void dbms_main::onDataViewContextMenu(const QPoint& pos)
+{
+    QTreeWidgetItem* item = ui->twDataView->itemAt(pos);
+    if (!item || !item->parent() || !item->parent()->parent()) return;
+    QMenu contextMenu(this);
+    QAction* actionDDL = contextMenu.addAction("Ver DDL");
+    QAction* selected = contextMenu.exec(ui->twDataView->viewport()->mapToGlobal(pos));
+    if (selected == actionDDL) {
+        QString ddl = generateDDL(item);
+        if (!ddl.isEmpty()) {
+            ui->pteSqlCommand->setPlainText(ddl);
+            showStatusMessage("DDL generado correctamente.", false);
+        } else
+            showStatusMessage("No se pudo generar el DDL para este objeto.", true);
+    }
+}
+
+void dbms_main::on_btnExportDDL_clicked()
+{
+    QTreeWidgetItem* item = ui->twDataView->currentItem();
+    // Validar que sea objeto concreto
+    if (!item || !item->parent() || !item->parent()->parent()) {
+        showStatusMessage("ERROR: El objeto seleccionado no es válido para exportar como DDL", true);
+        return;
+    }
+    QString ddl = generateDDL(item);
+    if (!ddl.isEmpty()) {
+        ui->pteSqlCommand->setPlainText(ddl);
+        showStatusMessage("DDL generado correctamente.", false);
+    } else
+        showStatusMessage("ERROR: No se pudo generar el DDL para este objeto.", true);
+}
+
 void dbms_main::on_btnAddConn_clicked()
 {
     dbms_connHandler uiConnConfig(this);
-
     if (uiConnConfig.exec() == QDialog::Accepted) {
         dbHandler* newConn = uiConnConfig.getHandler();
         if (newConn) {
@@ -149,12 +260,37 @@ void dbms_main::refreshDbInfo(dbHandler *handler)
     addCategory("Triggers",
                 QString("SHOW TRIGGERS FROM `%1`").arg(dbName),
                 0, "⚡");
-    addCategory("Índices",
+    /*addCategory("Índices",
                 QString("SELECT DISTINCT index_name, table_name "
                         "FROM mysql.innodb_index_stats "
                         "WHERE database_name = '%1' "
                         "AND stat_name = 'size'").arg(dbName),
-                0, "🔑");
+                0, "🔑");*/
+    QTreeWidgetItem* idxCatItem = new QTreeWidgetItem(root);
+    idxCatItem->setText(0, "🔑 Índices");
+    QSqlQuery idxQuery(db);
+    QString idxSql = QString(
+                         "SELECT DISTINCT index_name, table_name "
+                         "FROM mysql.innodb_index_stats "
+                         "WHERE database_name = '%1' "
+                         "AND stat_name = 'size' "
+                         "AND index_name != 'PRIMARY'"   // PRIMARY ya está en el DDL de la tabla
+                         ).arg(dbName);
+
+    if (idxQuery.exec(idxSql)) {
+        while (idxQuery.next()) {
+            QString indexName = idxQuery.value(0).toString();
+            QString tableName = idxQuery.value(1).toString();
+            QTreeWidgetItem* child = new QTreeWidgetItem(idxCatItem);
+            child->setText(0, indexName + " (en: " + tableName + ")");
+            // Guardar table_name para poder reconstruir el DDL después
+            child->setData(0, Qt::UserRole, tableName);
+        }
+    } else {
+        QTreeWidgetItem* errItem = new QTreeWidgetItem(idxCatItem);
+        errItem->setText(0, "Error: " + idxQuery.lastError().text());
+    }
+    idxCatItem->setExpanded(false);
     addCategory("Usuarios",
                 "SELECT CONCAT(User, '@', Host) FROM mysql.user",
                 0, "👤");
@@ -201,38 +337,62 @@ void dbms_main::showStatusMessage(const QString& msg, bool isError)
 
 void dbms_main::on_btnExecuteSql_clicked()
 {
-    // Verificar si hay conexion activa y hay un sql que ejecutar
     if (!activeConn) {
-        showStatusMessage("ERROR: No hay ninguna instancia de conexión seleccionada.", true);
+        showStatusMessage("ERROR: No hay conexión seleccionada.", true);
         return;
     }
-    QString sql = ui->pteSqlCommand->toPlainText().trimmed();
-    if (sql.isEmpty()) {
-        showStatusMessage("ERROR: No hay ningun SQL que ejecutar.", true);
+    QString rawSql = ui->pteSqlCommand->toPlainText().trimmed();
+    if (rawSql.isEmpty()) {
+        showStatusMessage("ERROR: El campo SQL está vacío.", true);
         return;
     }
-
     QSqlDatabase db = QSqlDatabase::database(activeConn->getConnId());
     if (!db.isOpen()) {
         showStatusMessage("ERROR: La conexión no está activa.", true);
         return;
     }
-    QSqlQuery query(db);
-    bool success = query.exec(sql);
-    if (!success) {
-        showStatusMessage("ERROR: " + query.lastError().text(), true);
-        return;
+
+    // Dividir por ";" y limpiar comentarios y líneas vacías
+    QStringList statements;
+    for (QString stmt : rawSql.split(";")) {
+        QStringList lines = stmt.split("\n");
+        QStringList cleanLines;
+        for (const QString& line : lines) {
+            QString trimmed = line.trimmed();
+            if (!trimmed.startsWith("--") && !trimmed.isEmpty())
+                cleanLines << line;
+        }
+        QString cleanStmt = cleanLines.join("\n").trimmed();
+        if (!cleanStmt.isEmpty())
+            statements << cleanStmt;
     }
 
-    // Eejecutar la query
-    if (query.isSelect())
-        showQueryResults(query);
-    else {
-        int affected = query.numRowsAffected();
-        showStatusMessage(QString("Ejecutado correctamente. Filas afectadas: %1").arg(affected), false);
-        // Limpiar tabla si no hay resultados que mostrar
-        ui->tvSqlOutput->setModel(nullptr);
+    int successCount = 0;
+    int errorCount = 0;
+    QSqlQuery lastSelectQuery;
+    bool hasSelectResult = false;
+    for (const QString& stmt : statements) {
+        QSqlQuery query(db);
+        bool ok = query.exec(stmt);
+        if (!ok) {
+            errorCount++;
+            showStatusMessage(
+                QString("Error en sentencia %1: %2").arg(successCount + errorCount).arg(query.lastError().text()), true);
+            return;
+        }
+        if (query.isSelect()) {
+            lastSelectQuery = query;
+            hasSelectResult = true;
+        }
+        successCount++;
     }
+    if (hasSelectResult)
+        showQueryResults(lastSelectQuery);
+    else {
+        ui->tvSqlOutput->setModel(nullptr);
+        showStatusMessage(QString("Script ejecutado: %1 sentencia(s) completada(s) correctamente.").arg(successCount), false);
+    }
+    updateConnTree();
 }
 
 void dbms_main::showQueryResults(QSqlQuery& query)
@@ -240,7 +400,6 @@ void dbms_main::showQueryResults(QSqlQuery& query)
     QSqlRecord record = query.record();
     int colCount = record.count();
     QStandardItemModel* model = new QStandardItemModel(this);
-
     // Encabezados de columna de tabla
     QStringList headers;
     for (int i = 0; i < colCount; i++)
@@ -258,7 +417,6 @@ void dbms_main::showQueryResults(QSqlQuery& query)
         model->appendRow(rowItems);
         row++;
     }
-
     // Reemplazar modelo anterior de tabla
     QAbstractItemModel* oldModel = ui->tvSqlOutput->model();
     ui->tvSqlOutput->setModel(model);
@@ -266,5 +424,6 @@ void dbms_main::showQueryResults(QSqlQuery& query)
         delete oldModel;
     ui->tvSqlOutput->horizontalHeader()->setStretchLastSection(true);
     ui->tvSqlOutput->resizeColumnsToContents();
+    updateConnTree();
     showStatusMessage(QString("Consulta exitosa. %1 fila(s) obtenidas.").arg(row), false);
 }
