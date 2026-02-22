@@ -66,7 +66,8 @@ void dbms_connHandler::on_btnConnect_clicked()
         ui->leServerName->text(),
         ui->leDatabaseName->text(),
         ui->leUsername->text(),
-        ui->lePassword->text()
+        ui->lePassword->text(),
+        ui->lePort->text()
         );
     if (success) {
         this->accept();

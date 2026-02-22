@@ -41,11 +41,11 @@ QString dbms_main::generateDDL(QTreeWidgetItem* item)
     if (!activeConn) return "";
     QSqlDatabase db = QSqlDatabase::database(activeConn->getConnId());
     if (!db.isOpen()) return "";
-
     QString parentText = item->parent()->text(0);
     QString objectName = item->text(0).remove("● ").trimmed();
     QString sql = "";
     QSqlQuery query(db);
+
     if (parentText.contains("Tablas"))
         sql = QString("SHOW CREATE TABLE `%1`").arg(objectName);
     else if (parentText.contains("Vistas"))
@@ -57,53 +57,39 @@ QString dbms_main::generateDDL(QTreeWidgetItem* item)
     else if (parentText.contains("Triggers"))
         sql = QString("SHOW CREATE TRIGGER `%1`").arg(objectName);
     else if (parentText.contains("Usuarios")) {
-        // SHOW CREATE USER necesita 'user'@'host'
         int atPos = objectName.lastIndexOf('@');
-        QString user = objectName.left(atPos);
-        QString host = objectName.mid(atPos + 1);
-        sql = QString("SHOW CREATE USER '%1'@'%2'").arg(user).arg(host);
-        if (query.exec(sql) && query.next())
-            return query.value(0).toString();
-    } else if (parentText.contains("Índices")) {
-        // Recuperar table_name guardado en UserRole
+        sql = QString("SHOW CREATE USER '%1'@'%2'").arg(objectName.left(atPos)).arg(objectName.mid(atPos + 1));
+    }
+    if (parentText.contains("Índices")) {
         QString tableName = item->data(0, Qt::UserRole).toString();
         QString indexName = objectName.left(objectName.indexOf(" ("));
         sql = QString("SHOW INDEX FROM `%1`.`%2` WHERE Key_name = '%3'")
-                  .arg(activeConn->getDbName())
-                  .arg(tableName)
-                  .arg(indexName);
-        if (!query.exec(sql)) {
-            showStatusMessage("ERROR: Fallo al leer índice: " + query.lastError().text(), true);
-            return "";
-        }
-        // Reconstruir DDL agrupando columnas por Seq_in_index = Column_name
-        bool isUnique = false;
-        QString indexType = "BTREE";
-        QMap<int, QString> columns;
-        while (query.next()) {
-            isUnique   = (query.value("Non_unique").toInt() == 0);
-            indexType  = query.value("Index_type").toString();
-            int seq    = query.value("Seq_in_index").toInt();
-            columns[seq] = query.value("Column_name").toString();
-        }
+                  .arg(activeConn->getDbName()).arg(tableName).arg(indexName);
 
-        if (columns.isEmpty()) return "";
-        QStringList colList;
-        for (const QString& col : columns)
-            colList << "`" + col + "`";
-        QString ddl = QString("CREATE %1INDEX `%2` ON `%3`.`%4` (%5) USING %6;")
-                          .arg(isUnique ? "UNIQUE " : "")
-                          .arg(indexName)
-                          .arg(activeConn->getDbName())
-                          .arg(tableName)
-                          .arg(colList.join(", "))
-                          .arg(indexType);
-        return ddl;
+        if (query.exec(sql)) {
+            bool isUnique = false;
+            QString indexType = "BTREE";
+            QMap<int, QString> columns;
+            while (query.next()) {
+                isUnique = (query.value("Non_unique").toInt() == 0);
+                indexType = query.value("Index_type").toString();
+                columns[query.value("Seq_in_index").toInt()] = query.value("Column_name").toString();
+            }
+            if (!columns.isEmpty()) {
+                QStringList colList;
+                for (const QString& col : columns) colList << "`" + col + "`";
+                return QString("CREATE %1INDEX `%2` ON `%3`.`%4` (%5) USING %6;")
+                    .arg(isUnique ? "UNIQUE " : "").arg(indexName).arg(activeConn->getDbName())
+                    .arg(tableName).arg(colList.join(", ")).arg(indexType);
+            }
+        }
     }
-    else
-        return "";
-    if (query.exec(sql) && query.next())
-        return query.value(1).toString();
+    if (!sql.isEmpty()) {
+        if (query.exec(sql) && query.next()) {
+            int colIndex = parentText.contains("Usuarios") ? 0 : 1;
+            return query.value(colIndex).toString() + ";";
+        }
+    }
     if (query.lastError().isValid())
         showStatusMessage("ERROR SQL: " + query.lastError().text(), true);
     return "";
@@ -277,12 +263,6 @@ void dbms_main::refreshDbInfo(dbHandler *handler)
     addCategory("Triggers",
                 QString("SHOW TRIGGERS FROM `%1`").arg(dbName),
                 0, "⚡");
-    /*addCategory("Índices",
-                QString("SELECT DISTINCT index_name, table_name "
-                        "FROM mysql.innodb_index_stats "
-                        "WHERE database_name = '%1' "
-                        "AND stat_name = 'size'").arg(dbName),
-                0, "🔑");*/
     QTreeWidgetItem* idxCatItem = new QTreeWidgetItem(root);
     idxCatItem->setText(0, "🔑 Índices");
     QSqlQuery idxQuery(db);

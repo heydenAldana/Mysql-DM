@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>dbms_main</class>
  <widget class="QMainWindow" name="dbms_main">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,6 +12,18 @@
     <width>1024</width>
     <height>696</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1024</width>
+    <height>696</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>DBMS (principal)</string>
@@ -23,7 +38,7 @@ background-color: rgb(17, 17, 17);</string>
      <rect>
       <x>280</x>
       <y>20</y>
-      <width>691</width>
+      <width>721</width>
       <height>241</height>
      </rect>
     </property>
@@ -38,9 +53,9 @@ background-color: rgb(10, 10, 8);
     <widget class="QPlainTextEdit" name="pteSqlCommand">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>50</y>
-       <width>671</width>
+       <width>681</width>
        <height>131</height>
       </rect>
      </property>
@@ -53,9 +68,9 @@ background-color: rgb(13, 13, 13);</string>
     <widget class="QPlainTextEdit" name="pleSqlDebugger">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>180</y>
-       <width>671</width>
+       <width>681</width>
        <height>51</height>
       </rect>
      </property>
@@ -357,9 +372,9 @@ background-color: rgb(10, 10, 8);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>60</y>
        <width>241</width>
-       <height>351</height>
+       <height>331</height>
       </rect>
      </property>
      <property name="widgetResizable">
@@ -371,7 +386,7 @@ background-color: rgb(10, 10, 8);</string>
         <x>0</x>
         <y>0</y>
         <width>239</width>
-        <height>349</height>
+        <height>329</height>
        </rect>
       </property>
       <widget class="QTreeWidget" name="twDataView">
@@ -380,7 +395,7 @@ background-color: rgb(10, 10, 8);</string>
          <x>0</x>
          <y>0</y>
          <width>241</width>
-         <height>401</height>
+         <height>331</height>
         </rect>
        </property>
        <property name="font">
@@ -420,7 +435,7 @@ background-color: rgb(10, 10, 8);</string>
      <rect>
       <x>280</x>
       <y>270</y>
-      <width>691</width>
+      <width>721</width>
       <height>411</height>
      </rect>
     </property>
@@ -434,7 +449,7 @@ background-color: rgb(10, 10, 8);</string>
     <widget class="QTableView" name="tvSqlOutput">
      <property name="geometry">
       <rect>
-       <x>5</x>
+       <x>20</x>
        <y>60</y>
        <width>681</width>
        <height>331</height>
@@ -449,7 +464,7 @@ background-color: rgb(10, 10, 8);</string>
     <widget class="QPushButton" name="btnCreateTable">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>10</y>
        <width>161</width>
        <height>41</height>
@@ -471,7 +486,7 @@ color: rgb(191, 182, 164);</string>
     <widget class="QPushButton" name="btnCreateView">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>210</x>
        <y>10</y>
        <width>161</width>
        <height>41</height>
