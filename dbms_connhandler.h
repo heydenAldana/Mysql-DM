@@ -4,20 +4,21 @@
 #include <QDialog>
 #include "dbhandler.h"
 
-
-namespace Ui {
-class dbms_connHandler;
-}
+namespace Ui { class dbms_connHandler; }
 
 class dbms_connHandler : public QDialog
 {
     Q_OBJECT
-
 public:
-    explicit dbms_connHandler(QWidget *parent = nullptr);
+    enum Mode {
+        ModeNewConnection,  // Todos los campos editables
+        ModeEditConnection, // Ttodos los campos editables
+        ModeValidate        // Solo contraseña editable
+    };
+    explicit dbms_connHandler(QWidget *parent = nullptr, Mode mode = ModeNewConnection);
     ~dbms_connHandler();
     dbHandler* getHandler() const { return handler; }
-    void prefillData(const QString& server, const QString& db, const QString& user, const QString& password);
+    void prefillData(const QString& server, const QString& db, const QString& user,   const QString& password);
 
 private slots:
     void on_btnCancel_clicked();
@@ -25,7 +26,9 @@ private slots:
 
 private:
     Ui::dbms_connHandler *ui;
-    dbHandler *handler;
+    dbHandler* handler;
+    Mode currentMode;
+    void applyMode();
 };
 
 #endif // DBMS_CONNHANDLER_H

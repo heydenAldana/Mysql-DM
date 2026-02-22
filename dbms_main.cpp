@@ -122,7 +122,7 @@ void dbms_main::onDataViewContextMenu(const QPoint& pos)
             ui->pteSqlCommand->setPlainText(ddl);
             showStatusMessage("DDL generado correctamente.", false);
         } else
-            showStatusMessage("No se pudo generar el DDL para este objeto.", true);
+            showStatusMessage("ERROR: No se pudo generar el DDL para este objeto.", true);
     }
 }
 
@@ -144,11 +144,10 @@ void dbms_main::on_btnExportDDL_clicked()
 
 void dbms_main::on_btnAddConn_clicked()
 {
-    dbms_connHandler uiConnConfig(this);
+    dbms_connHandler uiConnConfig(this, dbms_connHandler::ModeNewConnection);
     if (uiConnConfig.exec() == QDialog::Accepted) {
         dbHandler* newConn = uiConnConfig.getHandler();
         if (newConn) {
-            // Revisar si ya existe en la lista de conexiones
             bool connExists = false;
             for (dbHandler* existingConn : activeConnList) {
                 if (existingConn->getServerName() == newConn->getServerName() &&
@@ -158,7 +157,6 @@ void dbms_main::on_btnAddConn_clicked()
                     break;
                 }
             }
-            // Crear nueva conexion o rechazar conexion nueva si ya existe
             if (connExists) {
                 qDebug() << "La conexion ya existe en la lista. No se instanciará";
                 newConn->disconnectSession();
@@ -166,9 +164,18 @@ void dbms_main::on_btnAddConn_clicked()
             } else {
                 activeConnList.append(newConn);
                 qDebug() << "Nueva conexion agregada. Total:" << activeConnList.size();
+                // Desligar conexión anterior y conectar a la nueva
+                if (activeConn) {
+                    activeConn->disconnectSession();
+                    activeConn = nullptr;
+                }
+                activeConn = newConn;
                 updateConnTree();
+                refreshDbInfo(activeConn);
                 changeToolsState(1);
                 connFile::saveConnections(activeConnList);
+                showStatusMessage("Conectado a: " +
+                                      activeConn->getDbUsername() + "@" + activeConn->getServerName(), false);
             }
         }
     }
@@ -329,11 +336,28 @@ void dbms_main::on_btnDeleteAllConn_clicked()
 void dbms_main::on_twDatabaseConn_itemClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column);
-    if (!item || item->parent() != nullptr) return;
+    if (!item) return;
+    if (item->parent() != nullptr) return;
+
     int index = ui->twDatabaseConn->indexOfTopLevelItem(item);
-    if (index >= 0 && index < activeConnList.size()) {
-        activeConn = activeConnList[index];
-        refreshDbInfo(activeConn);
+    if (index < 0 || index >= activeConnList.size()) return;
+    dbHandler* targetConn = activeConnList[index];
+    if (targetConn == activeConn) return;
+
+    // Abrir diálogo en modo validación
+    dbms_connHandler dialog(this, dbms_connHandler::ModeValidate);
+    dialog.prefillData(targetConn->getServerName(), targetConn->getDbName(), targetConn->getDbUsername(), "");
+    if (dialog.exec() == QDialog::Accepted) {
+        dbHandler* validated = dialog.getHandler();
+        if (validated) {
+            targetConn->disconnectSession();
+            delete targetConn;
+            activeConnList[index] = validated;
+            activeConn = validated;
+            updateConnTree();
+            refreshDbInfo(activeConn);
+            showStatusMessage("Conexión autenticada: " + activeConn->getDbUsername() + "@" + activeConn->getServerName(), false);
+        }
     }
 }
 
@@ -513,29 +537,21 @@ void dbms_main::loadSavedConnections()
         updateConnTree();
         changeToolsState(1);
         showStatusMessage(
-            QString("%1 conexión(es) restaurada(s).").arg(activeConnList.size()),
-            false
-            );
+            QString("%1 conexión(es) restaurada(s).").arg(activeConnList.size()), false);
     }
 }
 
 void dbms_main::on_btnEditConn_clicked()
 {
     if (!activeConn) {
-        showStatusMessage("ERROR: No se ha seleccionado una conexión a editar.", true);
+        showStatusMessage("ERROR: No ha seleccionado una conexión aa editar.", true);
         return;
     }
-
-    dbms_connHandler uiConnConfig(this);
-    uiConnConfig.prefillData(
-        activeConn->getServerName(),
-        activeConn->getDbName(),
-        activeConn->getDbUsername(),
-        activeConn->getDbPassword()
-        );
-
-    if (uiConnConfig.exec() == QDialog::Accepted) {
-        dbHandler* edited = uiConnConfig.getHandler();
+    dbms_connHandler dialog(this, dbms_connHandler::ModeEditConnection);
+    dialog.prefillData(activeConn->getServerName(), activeConn->getDbName(),
+        activeConn->getDbUsername(), activeConn->getDbPassword());
+    if (dialog.exec() == QDialog::Accepted) {
+        dbHandler* edited = dialog.getHandler();
         if (edited) {
             int idx = activeConnList.indexOf(activeConn);
             if (idx >= 0) {
@@ -547,7 +563,7 @@ void dbms_main::on_btnEditConn_clicked()
             updateConnTree();
             refreshDbInfo(activeConn);
             connFile::saveConnections(activeConnList);
-            showStatusMessage("Conexión editada y guardada.", false);
+            showStatusMessage("Conexión editada y guardada correctamente.", false);
         }
     }
 }

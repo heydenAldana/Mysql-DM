@@ -207,6 +207,11 @@ background-color: rgb(10, 10, 8);</string>
          <height>171</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">border-color: rgb(89, 88, 76);</string>
        </property>
@@ -223,9 +228,14 @@ background-color: rgb(10, 10, 8);</string>
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>121</width>
+       <width>161</width>
        <height>17</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>Rama de conexiones</string>
@@ -373,6 +383,11 @@ background-color: rgb(10, 10, 8);</string>
          <height>401</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <column>
         <property name="text">
          <string notr="true">1</string>
@@ -386,9 +401,14 @@ background-color: rgb(10, 10, 8);</string>
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>151</width>
+       <width>181</width>
        <height>17</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>Vista de la base de datos</string>
