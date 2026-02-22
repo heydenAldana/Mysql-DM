@@ -4,6 +4,7 @@
 #include "dbhandler.h"
 #include "dbms_create_table.h"
 #include "dbms_create_view.h"
+#include "connFile.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -25,6 +26,8 @@ dbms_main::dbms_main(QWidget *parent)
             this, &dbms_main::onDataViewContextMenu);
     connect(ui->twDataView, &QTreeWidget::itemDoubleClicked,
             this, &dbms_main::on_twDataView_itemDoubleClicked);
+
+    loadSavedConnections();
 }
 
 dbms_main::~dbms_main()
@@ -165,6 +168,7 @@ void dbms_main::on_btnAddConn_clicked()
                 qDebug() << "Nueva conexion agregada. Total:" << activeConnList.size();
                 updateConnTree();
                 changeToolsState(1);
+                connFile::saveConnections(activeConnList);
             }
         }
     }
@@ -178,6 +182,7 @@ void dbms_main::on_btnDeleteConn_clicked()
         lastConn->disconnectSession();
         delete lastConn;
         updateConnTree();
+        connFile::saveConnections(activeConnList);
         ui->twDataView->clear();
         qDebug() << "Sesión finalizada y removida de la lista.";
     } else {
@@ -318,6 +323,7 @@ void dbms_main::on_btnDeleteAllConn_clicked()
     updateConnTree();
     qDebug() << "TODAS las conexiones fueron removidas de la memoria y de la lista";
     changeToolsState(0);
+    connFile::saveConnections(activeConnList);
 }
 
 void dbms_main::on_twDatabaseConn_itemClicked(QTreeWidgetItem *item, int column)
@@ -489,5 +495,60 @@ void dbms_main::on_btnCreateView_clicked()
     dbms_view_creation dialog(activeConn, this);
     if (dialog.exec() == QDialog::Accepted)
         refreshDbInfo(activeConn);
+}
+
+void dbms_main::loadSavedConnections()
+{
+    auto savedList = connFile::loadConnections();
+    if (savedList.isEmpty()) return;
+    for (const auto& data : savedList) {
+        dbHandler* conn = new dbHandler();
+        bool ok = conn->startSession(data.server, data.database, data.username, data.password);
+        if (ok)
+            activeConnList.append(conn);
+        else
+            delete conn;
+    }
+    if (!activeConnList.isEmpty()) {
+        updateConnTree();
+        changeToolsState(1);
+        showStatusMessage(
+            QString("%1 conexión(es) restaurada(s).").arg(activeConnList.size()),
+            false
+            );
+    }
+}
+
+void dbms_main::on_btnEditConn_clicked()
+{
+    if (!activeConn) {
+        showStatusMessage("ERROR: No se ha seleccionado una conexión a editar.", true);
+        return;
+    }
+
+    dbms_connHandler uiConnConfig(this);
+    uiConnConfig.prefillData(
+        activeConn->getServerName(),
+        activeConn->getDbName(),
+        activeConn->getDbUsername(),
+        activeConn->getDbPassword()
+        );
+
+    if (uiConnConfig.exec() == QDialog::Accepted) {
+        dbHandler* edited = uiConnConfig.getHandler();
+        if (edited) {
+            int idx = activeConnList.indexOf(activeConn);
+            if (idx >= 0) {
+                activeConn->disconnectSession();
+                delete activeConn;
+                activeConnList[idx] = edited;
+                activeConn = edited;
+            }
+            updateConnTree();
+            refreshDbInfo(activeConn);
+            connFile::saveConnections(activeConnList);
+            showStatusMessage("Conexión editada y guardada.", false);
+        }
+    }
 }
 

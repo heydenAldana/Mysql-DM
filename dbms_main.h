@@ -44,6 +44,8 @@ private slots:
 
     void on_btnCreateView_clicked();
 
+    void on_btnEditConn_clicked();
+
 private:
     Ui::dbms_main *ui;
     QList<dbHandler*> activeConnList;
@@ -54,5 +56,6 @@ private:
     void refreshDbInfo(dbHandler* handler);
     void showStatusMessage(const QString& msg, bool isError);
     QString generateDDL(QTreeWidgetItem* item);
+    void loadSavedConnections();
 };
 #endif // DBMS_MAIN_H

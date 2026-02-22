@@ -40,3 +40,11 @@ void dbms_connHandler::on_btnConnect_clicked()
         handler = nullptr;
     }
 }
+
+void dbms_connHandler::prefillData(const QString& server, const QString& db, const QString& user,  const QString& password)
+{
+    ui->leServerName->setText(server);
+    ui->leDatabaseName->setText(db);
+    ui->leUsername->setText(user);
+    ui->lePassword->setText(password);
+}

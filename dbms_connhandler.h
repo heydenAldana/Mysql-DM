@@ -17,6 +17,7 @@ public:
     explicit dbms_connHandler(QWidget *parent = nullptr);
     ~dbms_connHandler();
     dbHandler* getHandler() const { return handler; }
+    void prefillData(const QString& server, const QString& db, const QString& user, const QString& password);
 
 private slots:
     void on_btnCancel_clicked();

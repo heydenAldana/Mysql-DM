@@ -15,6 +15,7 @@ bool dbHandler::startSession(QString server, QString dbName, QString dbUsername,
     this->serverName = server;
     this->dbName = dbName;
     this->dbUsername = dbUsername;
+    this->dbPassword   = dbPassword;
     dbErrorMsg = "";
 
     if(connId.isEmpty())

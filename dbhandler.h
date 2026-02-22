@@ -9,7 +9,7 @@
 class dbHandler
 {
 private:
-    QString serverName, dbName, dbUsername;
+    QString serverName, dbName, dbUsername, dbPassword;
     QString dbErrorMsg, connId;
 public:
     dbHandler();
@@ -24,6 +24,7 @@ public:
     QString getServerName() const { return serverName; }
     QString getDbName() const { return dbName; }
     QString getDbUsername() const { return dbUsername; }
+    QString getDbPassword() const { return dbPassword; }
 };
 
 #endif // DBHANDLER_H
