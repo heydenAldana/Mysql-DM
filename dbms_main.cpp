@@ -421,6 +421,7 @@ void dbms_main::on_btnExecuteSql_clicked()
         ui->tvSqlOutput->setModel(nullptr);
         showStatusMessage(QString("Script ejecutado: %1 sentencia(s) completada(s) correctamente.").arg(successCount), false);
     }
+    refreshDbInfo(activeConn);
     updateConnTree();
 }
 
