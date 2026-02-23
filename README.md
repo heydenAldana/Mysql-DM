@@ -1,5 +1,5 @@
 # **MySql Database Manager - TBBD 2**
-El siguiente proyecto consiste en la cración de un programa que sea capaz de gestionar la base de datos de Mysql, así como también gestionar y consultar las tablas del sistema. Este programa se realiza mediante Qt Creator con el lenguaje de programación C++ y mediante el uso del (hasta el momento) driver QODBC (compatibles tanto con MariaDB como con MySQL) el cual es oficial de Qt SQL. Como es un proyecto con fines educativos, **NO** debe ser tomado como software profesional
+El siguiente proyecto consiste en la creación de un programa que sea capaz de gestionar la base de datos de Mysql, así como también gestionar y consultar las tablas del sistema. Este programa se realiza mediante Qt Creator con el lenguaje de programación C++ en un entorno Linux (base Debian) y mediante el uso del (hasta el momento) driver QODBC (compatibles tanto con MariaDB como con MySQL) el cual es oficial de Qt SQL. Como es un proyecto con fines educativos, **NO** debe ser tomado como software profesional
 
 La interfaz gráfica del proyecto es capaz de:
 * Gestionar las conexiones (crear y editar conexiones, eliminar una conexión específica y hacer un borrado completo de las conexiones)
@@ -11,11 +11,12 @@ La interfaz gráfica del proyecto es capaz de:
 * Agregar tablas y vistas en una base de datos de manera visual mediante ventanas emergentes y amigables al usuario.
 * Actualiza en tiempo real los cambios realizados en la base de datos.
 
-Esta sección se divide en 3 partes:
+Esta sección se divide en 4 partes:
 1. Limitaciones y restricciones encontradas.
 2. Estructura de archivos del proyecto.
 3. Como se obtienen la información de las tablas del sistema.
 4. Como se usa el programa.
+5. Cómo instalar la base de datos y compilar el GUI.
 
 ***
 ***
@@ -140,33 +141,33 @@ A continuación se detalla cada objeto soportado, el comando o system table util
 ---
 
 ### **3.1. Tablas**
-* **Listado:** Se utiliza el comando `SHOW FULL TABLES IN \``{DB}\`` WHERE Table_type = 'BASE TABLE'`, que retorna únicamente las tablas base, excluyendo las vistas.
-* **DDL:** Se utiliza `SHOW CREATE TABLE \``{DB}\``.\``{TABLE}\`, cuya columna 1 contiene el `CREATE TABLE` completo tal como fue definido originalmente, incluyendo constraints y motor de almacenamiento.
+* **Listado:** Se utiliza el comando `SHOW FULL TABLES IN {DB} WHERE Table_type = 'BASE TABLE'`, que retorna únicamente las tablas base, excluyendo las vistas.
+* **DDL:** Se utiliza `SHOW CREATE TABLE {DB}.{TABLE}`, cuya columna 1 contiene el `CREATE TABLE` completo tal como fue definido originalmente, incluyendo constraints y motor de almacenamiento.
 * **Mostrar columnas de tablas**: Se realiza mediante el comando `"SHOW COLUMNS FROM ``DB_NAME``.``DB_NTABLE`"
 
 ---
 
 ### **3.2. Vistas**
-* **Listado:** Se reutiliza `SHOW FULL TABLES IN \``{DB}\`` WHERE Table_type = 'VIEW'`, filtrando exclusivamente los objetos de tipo vista.
-* **DDL:** Se utiliza `SHOW CREATE VIEW \``{TABLE}\`, cuya columna 1 contiene el `CREATE VIEW` completo con la sentencia SELECT que la define.
+* **Listado:** Se reutiliza `SHOW FULL TABLES IN {DB} WHERE Table_type = 'VIEW'`, filtrando exclusivamente los objetos de tipo vista.
+* **DDL:** Se utiliza `SHOW CREATE VIEW {TABLE}`, cuya columna 1 contiene el `CREATE VIEW` completo con la sentencia SELECT que la define.
 
 ---
 
 ### **3.3. Procedimientos Almacenados**
 * **Listado:** Se utiliza `SHOW PROCEDURE STATUS WHERE Db = '{DB}'`, que retorna todos los procedimientos del esquema indicado. El nombre del procedimiento se obtiene de la columna 1 (`Name`).
-* **DDL:** Se utiliza `SHOW CREATE PROCEDURE \``{NAME}\`, cuya columna 2 contiene el `CREATE PROCEDURE` completo incluyendo el cuerpo del procedimiento.
+* **DDL:** Se utiliza `SHOW CREATE PROCEDURE {NAME}`, cuya columna 2 contiene el `CREATE PROCEDURE` completo incluyendo el cuerpo del procedimiento.
 
 ---
 
 ### **3.4. Funciones**
 * **Listado:** Se utiliza `SHOW FUNCTION STATUS WHERE Db = '{DB}'`, análogo al de procedimientos. El nombre se obtiene igualmente de la columna 1 (`Name`).
-* **DDL:** Se utiliza `SHOW CREATE FUNCTION \``{NAME}\`, cuya columna 2 contiene el `CREATE FUNCTION` completo.
+* **DDL:** Se utiliza `SHOW CREATE FUNCTION {NAME}`, cuya columna 2 contiene el `CREATE FUNCTION` completo.
 
 ---
 
 ### **3.5. Triggers**
-* **Listado:** Se utiliza `SHOW TRIGGERS FROM \``{DB}\`, que retorna todos los disparadores del esquema. El nombre del trigger se obtiene de la columna 0 (`Trigger`).
-* **DDL:** Se utiliza `SHOW CREATE TRIGGER \``{NAME}\`, cuya columna 2 contiene el `CREATE TRIGGER` completo incluyendo el evento y el cuerpo.
+* **Listado:** Se utiliza `SHOW TRIGGERS FROM {DB}`, que retorna todos los disparadores del esquema. El nombre del trigger se obtiene de la columna 0 (`Trigger`).
+* **DDL:** Se utiliza `SHOW CREATE TRIGGER {NAME}`, cuya columna 2 contiene el `CREATE TRIGGER` completo incluyendo el evento y el cuerpo.
 
 ---
 
@@ -182,7 +183,7 @@ A continuación se detalla cada objeto soportado, el comando o system table util
   Se excluye `PRIMARY` porque ese índice ya está representado en el DDL de la tabla. El `table_name` se almacena en el item del árbol usando `Qt::UserRole` para poder reconstruir el DDL posteriormente.
 * **DDL:** A diferencia del resto de objetos, MySQL/MariaDB no provee un comando `SHOW CREATE INDEX`. Por ello, el DDL se **reconstruye manualmente** a partir del resultado de:
 ```sql
-  SHOW INDEX FROM `{DB}`.`{TABLE}` WHERE Key_name = '{INDEX_NAME}'
+  SHOW INDEX FROM {DB}.{TABLE} WHERE Key_name = '{INDEX_NAME}'
 ```
   De este resultado se extraen los campos `Non_unique` (para determinar si es `UNIQUE`), `Index_type` (para el `USING BTREE/HASH`) y `Column_name` agrupados por `Seq_in_index` para respetar el orden de las columnas compuestas. Con estos datos se construye un `CREATE INDEX` equivalente.
 
@@ -201,7 +202,7 @@ A continuación se detalla cada objeto soportado, el comando o system table util
 ### **3.8. Columnas (uso interno en creación de vistas)**
 * No se expone como objeto independiente en el árbol, pero se consulta internamente en `dbms_create_view` para poblar los selectores de columnas:
 ```sql
-  SHOW COLUMNS FROM `{DB}`.`{TABLE}`
+  SHOW COLUMNS FROM {DB}.{TABLE}
 ```
   De este resultado se extraen el nombre del campo (columna 0) y el tipo de dato (columna 1) para presentarlos al usuario al momento de construir visualmente una vista.
 
@@ -225,3 +226,151 @@ Cuando se ejecuta el programa, por defecto, siempre aparece la ventana del dbms_
 * Visualizador de objetos de la base de datos a la que se conecta en la esquina izquierda inferior.
 * Pseudo-consola SQL con debugger (mensajes de error o notificación) para ejecutar SQLs y visualizar/exportar los DDLs generados en la esquina derecha superior.
 * Visualizador de tabla para mostrar resultados de un SELECT, con opciones para crear tablas y vistas cuya vista interactiva la hace fácil de usar, y se encuentra en la esquina derecha inferior.
+
+***
+***
+
+## **Cómo instalar la base de datos y compilar el GUI.**
+
+Esta sección cubre los pasos para levantar la base de datos MySQL mediante contenedor usando docker o podman y compilar la interfaz gráfica del proyecto.
+
+---
+
+### **5.1. Requisitos previos**
+
+Antes de comenzar, por favor asegúrese de tener instalado lo siguiente:
+
+| Requisito | Versión mínima | ¿Cómo verifico que versión tengo? |
+|---|---|---|
+| Docker o Podman | Cualquiera reciente | `docker --version` / `podman --version` |
+| Docker Compose o Podman Compose | v2+ | `docker compose version` |
+| Qt Creator + Qt SDK | Qt 5 o Qt 6 | Qt Installer |
+| CMake | 3.16+ | `cmake --version` |
+| Compilador C++ | GCC con C++17 | `g++ --version` |
+| MySQL ODBC Connector | 9.5 | `odbcinst -q -d` |
+| unixODBC | Cualquiera | `odbcinst --version` |
+
+---
+
+### **5.2. Levantar la base de datos con Docker o Podman**
+
+El proyecto incluye un `docker-compose.yml` que levanta un contenedor de **MySQL 8.0** en el puerto **3307** del host, con almacenamiento persistente en `./mysql-data`. Estp signiifca que las bases de datos y tablas y demás que usted cree persistirán.
+
+#### Opción A - Docker
+```bash
+# Desde la raíz del repositorio
+docker compose up -d
+```
+
+#### Opción B - Podman
+```bash
+# Desde la raíz del repositorio
+podman compose up -d
+```
+
+Una vez levantado, verifica que el contenedor esté activo:
+```bash
+# en docker
+docker ps
+# en podman
+podman ps
+```
+
+Deberia poder ver `mysql-native` con estado `Up`.
+
+**Datos de conexión del contenedor:**
+
+| Campo | Valor |
+|---|---|
+| Servidor | `127.0.0.1` |
+| Puerto | `3307` |
+| Usuario | `root` |
+| Contraseña | `mysql123` |
+| Base de datos | (dejar vacío para ver todas) |
+
+> **Nota:** El directorio `./mysql-data` se crea automáticamente en la raíz del repositorio la primera vez que se levanta el contenedor. Este directorio contiene los datos persistentes de MySQL y **no debe eliminarse** entre reinicios.
+
+#### Detener el contenedor
+```bash
+# en docker
+docker compose down
+# en podman
+podman compose down
+```
+
+---
+
+### **5.3. Instalar el conector MySQL ODBC**
+
+El proyecto requiere el driver **MySQL ODBC 9.5 Unicode Driver** para que Qt pueda comunicarse con MySQL.
+
+**Paso 1 - Instalar dependencia unixODBC:**
+```bash
+# En distribuciones linux base Debian (si no es, buscar el equivalente de tu distribución):
+sudo apt install unixodbc unixodbc-dev
+```
+
+**Paso 2 - Descargar el .deb oficial desde MySQL:**
+
+Puedes obtener el .deb oficial aqui: https://downloads.mysql.com/archives/c-odbc/
+
+**Paso 3 - Instalar el conector:**
+```bash
+sudo dpkg -i nombre_del_archivo.deb
+```
+
+Si falla por dependencias:
+```bash
+sudo apt --fix-broken install
+sudo dpkg -i nombre_del_archivo.deb
+```
+
+**Paso 4 - Verificar que el driver quedó registrado:**
+```bash
+odbcinst -q -d
+```
+
+La salida debe incluir:
+```
+[MySQL ODBC 9.5 Unicode Driver]
+[MySQL ODBC 9.5 ANSI Driver]
+```
+
+Si no aparece, el driver no está registrado y la aplicación no podrá conectarse.
+
+---
+
+### **5.4. Compilar la interfaz gráfica**
+
+#### Opción A - Desde Qt Creator (recomendado)
+
+1. Abre Qt Creator.
+2. Ve a **File → Open File or Project** y selecciona el archivo `CMakeLists.txt` de la raíz del repositorio.
+3. Qt Creator detectará automáticamente el kit de compilación disponible (Qt 5 o Qt 6).
+4. Haz clic en el botón **Build** (ícono de martillo) o presiona `Ctrl+B`.
+5. Una vez compilado, ejecuta con el botón **Run** o `Ctrl+R`.
+
+#### Opción B - Desde terminal con CMake
+```bash
+# Desde la raíz del repositorio
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
+./MySQL_DBMS
+```
+
+> **Nota:** Si tienes tanto Qt5 como Qt6 instalados, CMake dará prioridad a Qt6 automáticamente según el `CMakeLists.txt`. Para forzar el uso de Qt5 específicamente:
+> ```bash
+> cmake .. -DQT_VERSION_MAJOR=5
+> ```
+
+---
+
+### **5.5. Primer uso**
+
+1. Levanta el contenedor con `docker compose up -d` o `podman compose up -d`.
+2. Ejecuta la aplicación.
+3. En la ventana principal, haz clic en el botón **+** del gestor de conexiones.
+4. Ingresa los datos del contenedor (ver tabla en sección 5.2).
+5. Haz clic en **Conectar**.
+6. La conexión quedará guardada automáticamente en `connections.json` para sesiones futuras.
