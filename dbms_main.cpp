@@ -271,9 +271,8 @@ void dbms_main::refreshDbInfo(dbHandler *handler)
                          "FROM mysql.innodb_index_stats "
                          "WHERE database_name = '%1' "
                          "AND stat_name = 'size' "
-                         "AND index_name != 'PRIMARY'"   // PRIMARY ya está en el DDL de la tabla
+                         "AND index_name != 'PRIMARY'"
                          ).arg(dbName);
-
     if (idxQuery.exec(idxSql)) {
         while (idxQuery.next()) {
             QString indexName = idxQuery.value(0).toString();
