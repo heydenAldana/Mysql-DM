@@ -17,16 +17,13 @@ dbms_main::dbms_main(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-
     // Deshabilitar inputs y btns ya que no hay conexiones
     changeToolsState(0);
-
     ui->twDataView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->twDataView, &QTreeWidget::customContextMenuRequested,
             this, &dbms_main::onDataViewContextMenu);
     connect(ui->twDataView, &QTreeWidget::itemDoubleClicked,
             this, &dbms_main::on_twDataView_itemDoubleClicked);
-
     loadSavedConnections();
 }
 
@@ -223,73 +220,91 @@ void dbms_main::refreshDbInfo(dbHandler *handler)
     ui->twDataView->clear();
     QSqlDatabase db = QSqlDatabase::database(handler->getConnId());
     if (!db.isOpen()) return;
-
     QString dbName = handler->getDbName();
     QTreeWidgetItem* root = new QTreeWidgetItem(ui->twDataView);
     root->setText(0, "DB: " + dbName);
     root->setExpanded(true);
 
-    // Funcion lambda para Agregar los objetos al twDataView
-    auto addCategory = [&](const QString& title, const QString& query, int nameCol, const QString& emoji)
+    // Para visualizar los objetos que no requieren una logica compleja
+    auto addCategory = [&](const QString& emoji, const QString& title,
+                           const QString& query, int nameCol) -> QTreeWidgetItem*
     {
-        QTreeWidgetItem* catItem = new QTreeWidgetItem(root);
-        catItem->setText(0, emoji + " " + title);
+        QTreeWidgetItem* cat = new QTreeWidgetItem(root);
+        cat->setText(0, emoji + " " + title);
         QSqlQuery q(db);
         if (q.exec(query)) {
             while (q.next()) {
-                QTreeWidgetItem* child = new QTreeWidgetItem(catItem);
-                child->setText(0, "● " + q.value(nameCol).toString());
+                QTreeWidgetItem* child = new QTreeWidgetItem(cat);
+                QString name = q.value(nameCol).toString();
+                child->setText(0, "● " + name);
+                child->setData(0, Qt::UserRole, name);
             }
         } else {
-            QTreeWidgetItem* errItem = new QTreeWidgetItem(catItem);
+            QTreeWidgetItem* errItem = new QTreeWidgetItem(cat);
             errItem->setText(0, "● ERROR: " + q.lastError().text());
         }
-        catItem->setExpanded(false);
+        cat->setExpanded(false);
+        return cat;
     };
 
-    // Agregar categorias de objetos admitidos por MySQL
-    addCategory("Tablas",
-                QString("SHOW FULL TABLES IN `%1` WHERE Table_type = 'BASE TABLE'").arg(dbName),
-                0, "📊");
-    addCategory("Vistas",
-                QString("SHOW FULL TABLES IN `%1` WHERE Table_type = 'VIEW'").arg(dbName),
-                0, "🖼️");
-    addCategory("Procedimientos",
-                QString("SHOW PROCEDURE STATUS WHERE Db = '%1'").arg(dbName),
-                1, "⚙️");
-    addCategory("Funciones",
-                QString("SHOW FUNCTION STATUS WHERE Db = '%1'").arg(dbName),
-                1, "📝");
-    addCategory("Triggers",
-                QString("SHOW TRIGGERS FROM `%1`").arg(dbName),
-                0, "⚡");
-    QTreeWidgetItem* idxCatItem = new QTreeWidgetItem(root);
-    idxCatItem->setText(0, "🔑 Índices");
-    QSqlQuery idxQuery(db);
-    QString idxSql = QString(
-                         "SELECT DISTINCT index_name, table_name "
-                         "FROM mysql.innodb_index_stats "
-                         "WHERE database_name = '%1' "
-                         "AND stat_name = 'size' "
-                         "AND index_name != 'PRIMARY'"
-                         ).arg(dbName);
-    if (idxQuery.exec(idxSql)) {
-        while (idxQuery.next()) {
-            QString indexName = idxQuery.value(0).toString();
-            QString tableName = idxQuery.value(1).toString();
-            QTreeWidgetItem* child = new QTreeWidgetItem(idxCatItem);
-            child->setText(0, indexName + " (en: " + tableName + ")");
-            // Guardar table_name para poder reconstruir el DDL después
-            child->setData(0, Qt::UserRole, tableName);
+    // Para visualziar las tablas con las columnas y su tipo
+    auto addTableCategory = [&]()
+    {
+        QTreeWidgetItem* cat = addCategory("📊", "Tablas",
+                                           QString("SHOW FULL TABLES IN `%1` WHERE Table_type = 'BASE TABLE'").arg(dbName), 0);
+        for (int i = 0; i < cat->childCount(); i++) {
+            QTreeWidgetItem* tableItem = cat->child(i);
+            QString tableName = tableItem->data(0, Qt::UserRole).toString();
+            if (tableName.isEmpty()) continue;
+            QSqlQuery col;
+            col = QSqlQuery(db);
+            if (!col.exec(QString("SHOW COLUMNS FROM `%1`.`%2`").arg(dbName, tableName))) continue;
+            static const QMap<QString, QString> keyIcons = {{"PRI","🔑"},{"UNI","🔗"},{"MUL","📎"}};
+            while (col.next()) {
+                QString info = QString("◦ %1  [%2]%3 %4")
+                                   .arg(col.value(0).toString())
+                                   .arg(col.value(1).toString())
+                                   .arg(col.value(2).toString() == "NO" ? " NOT NULL" : "")
+                                   .arg(keyIcons.value(col.value(3).toString(), ""));
+                QTreeWidgetItem* colItem = new QTreeWidgetItem(tableItem); // <- SEPARADO
+                colItem->setText(0, info.trimmed());
+            }
         }
-    } else {
-        QTreeWidgetItem* errItem = new QTreeWidgetItem(idxCatItem);
-        errItem->setText(0, "Error: " + idxQuery.lastError().text());
-    }
-    idxCatItem->setExpanded(false);
-    addCategory("Usuarios",
-                "SELECT CONCAT(User, '@', Host) FROM mysql.user",
-                0, "👤");
+    };
+
+    // Visualizar la categoria de indices ya que no se puede con un SHOW INDEXES no más
+    auto addIndexCategory = [&]()
+    {
+        QTreeWidgetItem* cat = new QTreeWidgetItem(root);
+        cat->setText(0, "🔑 Índices");
+        QSqlQuery q(db);
+        if (q.exec(QString("SELECT DISTINCT index_name, table_name FROM mysql.innodb_index_stats "
+                           "WHERE database_name = '%1' AND stat_name = 'size' "
+                           "AND index_name != 'PRIMARY'").arg(dbName))) {
+            while (q.next()) {
+                QTreeWidgetItem* child = new QTreeWidgetItem(cat);
+                child->setText(0, q.value(0).toString() + " (en: " + q.value(1).toString() + ")");
+                child->setData(0, Qt::UserRole, q.value(1).toString());
+            }
+        } else {
+            QTreeWidgetItem* errItem = new QTreeWidgetItem(cat); // <- SEPARADO
+            errItem->setText(0, "Error: " + q.lastError().text());
+        }
+        cat->setExpanded(false);
+    };
+
+    addTableCategory();
+    addCategory("🖼️", "Vistas",
+                QString("SHOW FULL TABLES IN `%1` WHERE Table_type = 'VIEW'").arg(dbName), 0);
+    addCategory("⚙️", "Procedimientos",
+                QString("SHOW PROCEDURE STATUS WHERE Db = '%1'").arg(dbName), 1);
+    addCategory("📝", "Funciones",
+                QString("SHOW FUNCTION STATUS WHERE Db = '%1'").arg(dbName), 1);
+    addCategory("⚡", "Triggers",
+                QString("SHOW TRIGGERS FROM `%1`").arg(dbName), 0);
+    addIndexCategory();
+    addCategory("👤", "Usuarios",
+                "SELECT CONCAT(User, '@', Host) FROM mysql.user", 0);
 }
 
 
@@ -471,9 +486,8 @@ void dbms_main::on_btnCreateTable_clicked()
         return;
     }
     dbms_create_table dialog(activeConn, this);
-    if (dialog.exec() == QDialog::Accepted) {
+    if (dialog.exec() == QDialog::Accepted)
         refreshDbInfo(activeConn);
-    }
 }
 
 
