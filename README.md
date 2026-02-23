@@ -1,5 +1,5 @@
 # **MySql Database Manager - TBBD 2**
-El siguiente proyecto consiste en la cración de un programa que sea capaz de gestionar la base de datos de Mysql, así como también gestionar y consultar las tablas del sistema. Este programa se realiza mediante Qt Creator con el lenguaje de programación C++ y mediante el uso del (hasta el momento) driver QODBC (compatibles tanto con MariaDB como con MySQL) el cual es oficial de Qt SQL.
+El siguiente proyecto consiste en la cración de un programa que sea capaz de gestionar la base de datos de Mysql, así como también gestionar y consultar las tablas del sistema. Este programa se realiza mediante Qt Creator con el lenguaje de programación C++ y mediante el uso del (hasta el momento) driver QODBC (compatibles tanto con MariaDB como con MySQL) el cual es oficial de Qt SQL. Como es un proyecto con fines educativos, **NO** debe ser tomado como software profesional
 
 La interfaz gráfica del proyecto es capaz de:
 * Gestionar las conexiones (crear y editar conexiones, eliminar una conexión específica y hacer un borrado completo de las conexiones)
@@ -15,6 +15,7 @@ Esta sección se divide en 3 partes:
 1. Limitaciones y restricciones encontradas.
 2. Estructura de archivos del proyecto.
 3. Como se obtienen la información de las tablas del sistema.
+4. Como se usa el programa.
 
 ***
 ***
@@ -69,7 +70,7 @@ He creado una clase base que representa una sesión de conexión individual haci
 
 ---
 
-### **2.3. Persistencia de conexiones - connFile**
+### **2.3. Almacenamiento persistente de conexiones - connFile**
 
 He creado esta clase la cual es responsable de serializar y deserializar las conexiones activas hacia un archivo JSON en disco.
 
@@ -141,6 +142,7 @@ A continuación se detalla cada objeto soportado, el comando o system table util
 ### **3.1. Tablas**
 * **Listado:** Se utiliza el comando `SHOW FULL TABLES IN \``{DB}\`` WHERE Table_type = 'BASE TABLE'`, que retorna únicamente las tablas base, excluyendo las vistas.
 * **DDL:** Se utiliza `SHOW CREATE TABLE \``{DB}\``.\``{TABLE}\`, cuya columna 1 contiene el `CREATE TABLE` completo tal como fue definido originalmente, incluyendo constraints y motor de almacenamiento.
+* **Mostrar columnas de tablas**: Se realiza mediante el comando `"SHOW COLUMNS FROM ``DB_NAME``.``DB_NTABLE`"
 
 ---
 
@@ -215,3 +217,11 @@ A continuación se detalla cada objeto soportado, el comando o system table util
 
 ***
 ***
+
+## **4. Como se usa el programa.**
+
+Cuando se ejecuta el programa, por defecto, siempre aparece la ventana del dbms_main. Aquí es donde usted puede visualizar 4 secciones importantes:
+* Gestor y visualizador de conexiones (añadir, editar, eliminar una y eliminar todas las conexiones) en la esquina izquierda superior.
+* Visualizador de objetos de la base de datos a la que se conecta en la esquina izquierda inferior.
+* Pseudo-consola SQL con debugger (mensajes de error o notificación) para ejecutar SQLs y visualizar/exportar los DDLs generados en la esquina derecha superior.
+* Visualizador de tabla para mostrar resultados de un SELECT, con opciones para crear tablas y vistas cuya vista interactiva la hace fácil de usar, y se encuentra en la esquina derecha inferior.
