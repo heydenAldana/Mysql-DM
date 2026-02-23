@@ -266,7 +266,7 @@ void dbms_main::refreshDbInfo(dbHandler *handler)
                                    .arg(col.value(1).toString())
                                    .arg(col.value(2).toString() == "NO" ? " NOT NULL" : "")
                                    .arg(keyIcons.value(col.value(3).toString(), ""));
-                QTreeWidgetItem* colItem = new QTreeWidgetItem(tableItem); // <- SEPARADO
+                QTreeWidgetItem* colItem = new QTreeWidgetItem(tableItem);
                 colItem->setText(0, info.trimmed());
             }
         }
@@ -287,7 +287,7 @@ void dbms_main::refreshDbInfo(dbHandler *handler)
                 child->setData(0, Qt::UserRole, q.value(1).toString());
             }
         } else {
-            QTreeWidgetItem* errItem = new QTreeWidgetItem(cat); // <- SEPARADO
+            QTreeWidgetItem* errItem = new QTreeWidgetItem(cat);
             errItem->setText(0, "Error: " + q.lastError().text());
         }
         cat->setExpanded(false);
